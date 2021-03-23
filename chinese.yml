@@ -1,0 +1,42 @@
+#  Using newsmap    'CN': [China, Chinese, Beijing, Shanghai]
+#  https://github.com/koheiw/newsmap/blob/a6fb4cb529c59474ba980be40747e05c2ebf72c6/dict/english.yml#L145
+en:
+  chinese: [Chinese]
+  china: [China]
+  beijing: [Beijing]
+  shanghai: [Shanghai]
+no:
+  chinese: [Kineser*, Kinesar*, Kinesisk]
+  china: [Kina]
+  beijing: [Beijing]
+  shanghai: [Shanghai]  
+es:
+  chinese: [chino*, china*]
+  china: [China]
+  beijing: [Pekin]
+  shanghai: [Shanghái]
+ro:
+  chinese: [chinez*]
+  china: [China]
+  beijing: [Beijing]
+  shanghai: [Shanghai]
+de:
+  chinese: [chinesisch*, Chinesin*, Chinese*]
+  china: [China*]
+  beijing: [Peking]
+  shanghai: [Shanghai]
+nl:
+  chinese: [Chinezen, Chinees*, Chinezin*, chines*]
+  china: [China]
+  beijing: [Peking, Beijing]
+  shanghai: [Sjanghai, Shanghai]
+ko:
+  chinese: [중국인, 중화]
+  china: [중국]
+  beijing: [베이징, 북경]
+  shanghai: [상하이, 상해]
+pt:
+  chinese: [chinês, chines*]
+  china: [China]
+  beijing: [Pequim]
+  shanghai: [Xangai]
