@@ -27,7 +27,7 @@ abstract: |
 keywords          : "Bayesian inference, multilevel model, comparative content analysis, ecological effect"
 wordcount         : "0"
 
-bibliography      : ["/home/chainsawriot/dev/dotfiles/bib.bib"]
+bibliography      : ["manuscript.bib"]
 
 floatsintext      : yes
 figurelist        : no
