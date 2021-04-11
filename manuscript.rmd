@@ -27,7 +27,7 @@ abstract: |
 keywords          : "Bayesian inference, multilevel model, comparative content analysis, ecological effect"
 wordcount         : "0"
 
-bibliography      : ["manuscript.rmd"]
+bibliography      : ["manuscript.bib"]
 
 floatsintext      : yes
 figurelist        : no
@@ -87,7 +87,7 @@ There are two solutions to this. The first solution is to aggregate the micro-le
 
 \begin{equation}
   \label{eq:2}
-  z_{k} = \beta_{0} + \beta_{1} x_{k} + \epsilon_{k}
+  \log{z_{k}} = \beta_{0} + \beta_{1} x_{k} + \epsilon_{k}
 \end{equation}
 
 Using this aggregation method, the unit of analysis effectively switches from article to country. This method is useful when $x$ is the only independent variable, akin @esser:2013:C. It is not technically committing atomistic fallacy, when one uses the value of slope as the evidence for an ecological effect. However, this method still has important drawbacks. First, it cannot be used for data with more than two levels. In @esser:2013:C, for example, multiple media outlets from the same country were lumped together and in effect, assumed to be homogenous and the information about media outlets was discarded. Second, this method discards a massive amount of information. It is better for analysis of a dependent micro-level variable with a reasonably aggregation function (e.g. counting a binary variable). For numerical variables, aggregation functions such as taking a mean or median cannot capture the spread of the micro-level variable [@bryk:1988:H]. Also, the effective sample size is reduced from the number of articles ($m$) to the number of countries ($n$). Nonetheless, this aggregation method, although inflexible, is still useful when the number of groups (e.g. $n$) is large. It is also useful to collapse micro-levels (e.g. article-level) that are not useful in answering one’s research questions.
@@ -193,10 +193,12 @@ For all analyses, we tried 3 different approaches: 1) Disaggregation approach (i
  
 ### Outlet-level analysis
 
-We used negative binomial regression for this analysis. Media outlets are nested in countries (e.g. *Der Standard* and *Österreichischer Rundfunk* are nested in Austria). Thus, a country-based variance is added ($\mu_{0k}$). Applying the same notation under the introduction section, the multilevel regression equations are:
+We used negative binomial regression for this analysis. Media outlets are nested in countries (e.g. *Der Standard* and *Österreichischer Rundfunk* are nested in Austria). Thus, a country-based variance is added ($\mu_{0k}$). We also added $\log{n_{j}}$ as an offset value. An offset value is a term that does not have the associated regression coefficient at the right-hand side of the regression equation \@ref(eq:2). Effectively, we modeled the *rate* of China coverage. Applying the same notation under the introduction section, the multilevel regression equations are:
 
 \begin{align}
-\log(\frac{z_{jk}}{n_{j}}) &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \epsilon_{jk}
+\log{z_{jk}} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \log{n_j} + \epsilon_{jk} \\
+\log{z_{jk}} - \log{n_j} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} +  \epsilon_{jk} \\
+\log\frac{z_{jk}}{n_{j}} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \epsilon_{jk} \\
 \end{align}
 
 In lme4 and brms, the equation is expressed as such:
@@ -213,7 +215,7 @@ lme4::glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
 In the disaggregation case, the multilevel structure is ignored and the regression equation becomes:
 
 \begin{align}
-\log(\frac{z_{jk}}{n_{j}}) &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{j}
+\log\frac{z_{jk}}{n_{j}} &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{j}
 \end{align}
 
 In MASS, it is expressed as such:
