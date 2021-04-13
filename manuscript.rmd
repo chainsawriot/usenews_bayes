@@ -58,7 +58,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 *"The comparative approach attempts to reach conclusions beyond single cases and explains differences and similarities between objects of analysis against the backdrop of their contextual conditions."* @esser:2017:CRM
 
-Comparative content analysis is a frequently used research design in journalism studies. Comparative content analysis is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI], among others. A typical comparative content analysis in journalism research includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative content analysis studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily  determined  by  geographical  proximity  and  the  status  of  the  covered  country" [@wilke:2012, p.306] and "the  degree  of  opinion-orientation  will  be  highest  in  newspapers  from  Polarized  Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
+Comparative content analysis is a frequently used research design in journalism studies. Comparative content analysis is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. A typical comparative content analysis in journalism research includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative content analysis studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily  determined  by  geographical  proximity  and  the  status  of  the  covered  country" [@wilke:2012, p.306] and "the  degree  of  opinion-orientation  will  be  highest  in  newspapers  from  Polarized  Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
 
 This study of ecological effect on individual behaviours has a long tradition in social sciences. A famous example was Émile Durkheim’s investigation on the ecological factors associated with suicide. Durkheim found the higher suicide rate among citizens from Scandinvian countries than those from other European countries. Using today’s standard, Durkheim’s analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative content analysis. An example of hypothesis-generating comparative content analysis is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative content analysis, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative content analysis introduces a feature that researchers usually overlook: media contents are clustered in multilevel. A news article is nested within its media outlet and its media outlet is in turn nested within its country. Theoretically with a large enough sample it can be argued that a news article is nested within authors. Such data structure brings two problems: non-atomicity and non-stochasticity.
 
@@ -311,16 +311,24 @@ Table: (\#tab:t1) Point and interval estimates from outlet-level analysis using 
 
 Model B1 confirms the above again (Table \@ref(tab:t2) ). Therefore, both article- and outlet-level analyses arrive at the same conclusion.
 
-```{r t2, results = "asis"}
-### TODO: to prim it further
-require(brms)
-require(parameters)
-require(dplyr)
-article_level <- readRDS("import_logit.RDS")
-article_level %>% parameters(ci = 0.95, effects = "fixed", dispersion = TRUE, centrality = "mean", test = "pd") %>% as.data.frame -> res
+<!-- ```{r t2, results = "asis"} -->
+<!-- ### TODO: to prim it further -->
+<!-- require(brms) -->
+<!-- require(parameters) -->
+<!-- require(dplyr) -->
+<!-- article_level <- readRDS("import_logit.RDS") -->
+<!-- article_level %>% parameters(ci = 0.95, effects = "fixed", dispersion = TRUE, centrality = "mean", test = "pd") %>% as.data.frame -> res -->
 
-res %>% dplyr::select(Parameter, Mean, SD, CI_low, CI_high) %>% rename(Estimate = Mean) %>% knitr::kable(format = "markdown", caption = "Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country", digits = 2)
-```
+<!-- res %>% dplyr::select(Parameter, Mean, SD, CI_low, CI_high) %>% rename(Estimate = Mean) %>% knitr::kable(format = "markdown", caption = "Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country", digits = 2) -->
+<!-- ``` -->
+
+Table: (\#tab:t2) Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country
+
+| Parameter                          | Estimate | SD   | 95 \%HDI       |
+|:-----------------------------------|:---------|------|----------------|
+| $\gamma_{000}$ (Intercept)         | -7.06    | 0.81 | (-8.61, -5.44) |
+| $\gamma_{001}$ (Log import volume) | 0.27     | 0.06 | (0.16, 0.38)   |
+
 
 ## Diagnosis of convergence
 
