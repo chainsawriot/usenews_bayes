@@ -60,7 +60,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 Comparative content analysis is a frequently used research design in journalism studies. Comparative content analysis is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. A typical comparative content analysis in journalism research includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative content analysis studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
 
-This study of ecological effect on individual behaviours has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found the higher suicide rate among citizens from Scandinvian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative content analysis. An example of hypothesis-generating comparative content analysis is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative content analysis, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative content analysis introduces a feature that researchers usually overlook: media contents are clustered in multilevel. A news article is nested within its media outlet and its media outlet is in turn nested within its country. Theoretically with a large enough sample it can be argued that a news article is nested within authors. Such data structure brings two problems: non-atomicity and non-stochasticity.
+This study of ecological effect on individual behaviors has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found the higher suicide rate among citizens from Scandinavian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative content analysis. An example of hypothesis-generating comparative content analysis is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative content analysis, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative content analysis introduces a feature that researchers usually overlook: media contents are clustered in multilevel. A news article is nested within its media outlet and its media outlet is in turn nested within its country. Theoretically with a large enough sample it can be argued that a news article is nested within authors. Such data structure brings two problems: non-atomicity and non-stochasticity.
 
 In our paper we first discuss these two issues before we suggest Bayesian multilevel regression as a standard approach for comparative research in journalism studies. While Bayesian models might be slightly more complicated to estimate in contrast to frequentist models as priors have to be chosen, these models allow researchers to make "principled statements about precision and plausibility" [@morey:2015 p. 121] and solve the issue of misinterpreted confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Using the openly available useNews data and the R package brms, we then demonstrate how to apply a Bayesian approach for the analysis of comparative content analysis.
 
@@ -82,16 +82,16 @@ This method is the so-called "disaggregation approach". From an epistemic standp
 
 Previous simulation studies have shown that ignoring this dependence can lead to false-positive associations [e.g. @clarke:2008:W;@chen:2012:IIL]. The problem is more severe when the dependent variable is a discrete binary variable [@clarke:2008:W], a common feature of content analysis. [^2]
 
-[^2]: Some communication researchers apply the disaggregation approach by justifying the intraclass correlation between groups is small and the impact of ignoring the multilevel structure is also small [a finding in @chen:2012:IIL], see an example in @zhu:2020:S [footnote 5]. Even a multilevel modeling textbook avocates this justification [@bickel2007multilevel]. We reject this justification because it violates the independence assumption and thus commits atomistic fallacy. See also @nezlek:2008:IMM for a criticism of such justification. 
+[^2]: Some communication researchers apply the disaggregation approach by justifying the intraclass correlation between groups is small and the impact of ignoring the multilevel structure is also small [a finding in @chen:2012:IIL], see an example in @zhu:2020:S [footnote 5]. Even a multilevel modeling textbook advocates this justification [@bickel2007multilevel]. We reject this justification because it violates the independence assumption and thus commits atomistic fallacy. See also @nezlek:2008:IMM for a criticism of such justification. 
 
-There are two solutions to this. The first solution is to aggregate the micro-level dependent variable across a macro-level inpendent variable. Suppose there are $n$ countries in the above example. One can aggregate the total number of articles covering China as $z_{k}$ for the $k$-th country, where $k=i,\ldots,n$. Then, we can do a count-based regression with a regression equation like so:
+There are two solutions to this. The first solution is to aggregate the micro-level dependent variable across a macro-level independent variable. Suppose there are $n$ countries in the above example. One can aggregate the total number of articles covering China as $z_{k}$ for the $k$-th country, where $k=i,\ldots,n$. Then, we can do a count-based regression with a regression equation like so:
 
 \begin{equation}
   \label{eq:2}
   \log{z_{k}} = \beta_{0} + \beta_{1} x_{k} + \epsilon_{k}
 \end{equation}
 
-Using this aggregation method, the unit of analysis effectively switches from article to country. This method is useful when $x$ is the only independent variable, akin @esser:2013:C. It is not technically committing atomistic fallacy, when one uses the value of slope as the evidence for an ecological effect. However, this method still has important drawbacks. First, it cannot be used for data with more than two levels. In @esser:2013:C, for example, multiple media outlets from the same country were lumped together and in effect, assumed to be homogenous and the information about media outlets was discarded. Second, this method discards a massive amount of information. It is better for analysis of a dependent micro-level variable with a reasonably aggregation function (e.g. counting a binary variable). For numerical variables, aggregation functions such as taking a mean or median cannot capture the spread of the micro-level variable [@bryk:1988:H]. Also, the effective sample size is reduced from the number of articles ($m$) to the number of countries ($n$). Nonetheless, this aggregation method, although inflexible, is still useful when the number of groups (e.g. $n$) is large. It is also useful to collapse micro-levels (e.g. article-level) that are not useful in answering one’s research questions.
+Using this aggregation method, the unit of analysis effectively switches from article to country. This method is useful when $x$ is the only independent variable, akin @esser:2013:C. It is not technically committing atomistic fallacy, when one uses the value of slope as the evidence for an ecological effect. However, this method still has important drawbacks. First, it cannot be used for data with more than two levels. In @esser:2013:C, for example, multiple media outlets from the same country were lumped together and in effect, assumed to be homogeneous and the information about media outlets was discarded. Second, this method discards a massive amount of information. It is better for analysis of a dependent micro-level variable with a reasonably aggregation function (e.g. counting a binary variable). For numerical variables, aggregation functions such as taking a mean or median cannot capture the spread of the micro-level variable [@bryk:1988:H]. Also, the effective sample size is reduced from the number of articles ($m$) to the number of countries ($n$). Nonetheless, this aggregation method, although inflexible, is still useful when the number of groups (e.g. $n$) is large. It is also useful to collapse micro-levels (e.g. article-level) that are not useful in answering one’s research questions.
 
 Another solution is to use the multilevel model (linear mixed model, or hierarchical model). In a multilevel model, the effect on micro-level dependent variable ($y$) is modeled with equations at different levels. Using the above example, $y_{ik}$ denotes whether the $i$-th article in the $j$-th country is covering China; $x_{k}$ denotes the trade volume with China of the $k$-th country where the media outlet of $i$-th article is located. 
 
@@ -125,7 +125,7 @@ Before diving into our theoretical reasoning, it is important to revisit what fr
 Comparative content analysis, unlike randomized surveys or randomized media experiments, usually collects all available data. In contrast to sampling, these studies are actually doing census of all data and there is no way to get more data unless the scope of these studies is changed [@berk:1995:SIA]. It is especially true for modern large-N studies using automated content analytic techniques. @burggraaff:2017:T, for instance, "collected all available news items from a selection of major Dutch news outlets, both online and print" (p. 6) and that amounted to 762,095 articles from 9 outlets in the period of 2014-2015. 
 Census-style studies are not repeatable and thus they generate non-stochastic data. In other words, data from comparative content analysis are fundamentally irrelevant for frequentist inference [@western:1994:BIC]. P-values and confidence intervals generated do not have the same meaning as those from repeatable studies. According to @western:1994:BIC [p. 413], these values from non-stochastic data "lack meaning even as abstract propositions".
 
-Following arguments from @western:1994:BIC and @stegmueller:2013:HMC for comparative studies, Bayesian inference should be used for analyzing data from comparative content analysis. Choosing a Bayesian approach also solves the problem of misinterpreted confidence intervals Hoeckstra et al., 2014; Rinke & Schneider, 2016). Switching to a Bayesian approach addresses this issue as Bayesian „credible intervals support an interpretation of probability in terms of plausibility" (Morey et al., 2016, p. 120). However, for Bayesian models priors have to be chosen by reserachers.
+Following arguments from @western:1994:BIC and @stegmueller:2013:HMC for comparative studies, Bayesian inference should be used for analyzing data from comparative content analysis. Choosing a Bayesian approach also solves the problem of misinterpreted confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Switching to a Bayesian approach addresses this issue as Bayesian "credible intervals support an interpretation of probability in terms of plausibility" [@morey:2015, p.120]. However, for Bayesian models priors have to be chosen by researchers.
 
 ## Bayesian analysis
 
@@ -141,7 +141,7 @@ Without repeated experiment, these probabilities quantify our certainty on how l
  
 The $P(X| \theta)$ part is called likelihood function. In the $Digital Journalism$ example, the likelihood function is based on rough rules from our experience and thus is not systematic. In actual analysis, we need to derive such likelihood function based on the available data using methods such as Markov Chain Monte Carlo (MCMC). Nonetheless, the above equation indicates that there are only three ingredients in any Bayesian analysis: 1) data ($X$), 2) a method to derive the likelihood function $P(X | \theta)$ from the data, and 3) prior, $P(\theta)$. 
 
-We skip elaborating part 1, because some, but certainty not all, researchers have the means to amass a massive amount. The mechanism of how part 2 can be used to derive the likelihood function is beyond the scope of this paper. <!-- We provide a tutorial in Appendix I(+++TODO) for those who want to get an intuition. --> The current standard method, MCMC, is much more computationally intensive and has only been possible on desktop computer since mid-1990s [@robert:2011:SHM]. And only in the last few years that can be done efficiently [@hoffman2014no], thanks to the probablistic programming language *Stan* [@gelman:2015:S]. R interfaces to Stan, such as *brms* [@burkner2017advanced], make Bayesian analysis even more accessible to R users. But still, it is important to be mindful that Bayesian analysis is much more computational intensive than methods such as MLE. Our benchmark suggests that Bayesian analysis needs at least 100 times more running time than MLE.
+We skip elaborating part 1, because some, but certainty not all, researchers have the means to amass a massive amount. The mechanism of how part 2 can be used to derive the likelihood function is beyond the scope of this paper. <!-- We provide a tutorial in Appendix I(+++TODO) for those who want to get an intuition. --> The current standard method, MCMC, is much more computationally intensive and has only been possible on desktop computer since mid-1990s [@robert:2011:SHM]. And only in the last few years that can be done efficiently [@hoffman2014no], thanks to the probabilistic programming language *Stan* [@gelman:2015:S]. R interfaces to Stan, such as *brms* [@burkner2017advanced], make Bayesian analysis even more accessible to R users. But still, it is important to be mindful that Bayesian analysis is much more computational intensive than methods such as MLE. Our benchmark suggests that Bayesian analysis needs at least 100 times more running time than MLE.
 
 Part 3 (Prior) is arguably the most controversial part of Bayesian analysis. In the *Digital Journalism* example, we can select a reasonable prior (or **informative** prior) of 24% from published information. More often than not, we do not have any information to set an informative prior (e.g. What about a new journal?). One option is to consult experts or to make an educated guess. But one person's expert opinion could be another person's wishful thinking. And this perceived subjectivity of specifying priors attracts wide-spread criticism from both statisticians [e.g. @efron1986isn] and social scientists [@elff:2020:MAF;@bryan:2015:MMC].
 
@@ -151,9 +151,9 @@ Undoubtedly, setting prior is consequential to the analysis [@van:2006:PB]. But 
 
 ## Bayesian communication research
 
-*"There is a general challenge to a prescription of more widespread use of Bayesian methods for multilevel modelling, and that is that such methods require statistical expertise beyond that of most applied social science researchers, as well as specialist software (or software with which such researchers are unfamiliar)."* @bryan:2015:MMC [p. 19]
+*"There is a general challenge to a prescription of more widespread use of Bayesian methods for multilevel modeling, and that is that such methods require statistical expertise beyond that of most applied social science researchers, as well as specialist software (or software with which such researchers are unfamiliar)."* @bryan:2015:MMC [p. 19]
 
-Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method [e.g. @kovic:2017:B;@chan2020high] these studies are not comparative. As far as we know, the only available comparative content analysis that Bayesian multilevel regression was used for studying ecological effect is @leeuw:2020:AAT. We believe comparative content analysis fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], the main purpose of this paper is to demonstrate how to practically implement one using the R package *brms* [@burkner2017advanced]. As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. The above quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modelling is no longer an issue. 
+Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method [e.g. @kovic:2017:B;@chan2020high] these studies are not comparative. As far as we know, the only available comparative content analysis that Bayesian multilevel regression was used for studying ecological effect is @leeuw:2020:AAT. We believe comparative content analysis fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], the main purpose of this paper is to demonstrate how to practically implement one using the R package *brms* [@burkner2017advanced]. As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. The above quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modeling is no longer an issue. 
 
 # Methods
 
@@ -165,7 +165,7 @@ For demonstrative purposes, our analysis was separated into two levels: outlet-l
 
 The useNews is an openly available dataset [@puschmann:2020] that includes media content data from an array of worldwide media outlets from 2019 to 2020. The media content data was collected from the MIT MediaCloud and made available as document-term matrices.
 
-We used only the data from 2019 as the baseline. It is important to note that the Hong Kong protests, the 30th anniversary of the Tiananmen Square Protests and the 70th anniversary of the communist regime were in that year. Also, it was in the zenith of the US-China trade war. 
+We used only the data from 2019 as the baseline. It is important to note that the Hong Kong protests, the 30th anniversary of the Tienanmen Square Protests and the 70th anniversary of the communist regime were in that year. Also, it was in the zenith of the US-China trade war. 
 
 We excluded media outlets that contributed <1000 articles in that year. This threshold allowed us to retain media outlets that the frequency of China coverage can be reliably estimated. In total, 61 media outlets from Spain (n = 11), Romania (n = 11), US (n = 7), Austria (n = 6), Germany (n = 5), Norway (n = 5), Australia (n  = 4), Brazil (n = 4), UK (n = 4), South Korea (n = 2), and the Netherlands (n = 2) were included. These 61 media outlets contributed 1,525,871 articles.
 
@@ -175,7 +175,7 @@ In the article-level analysis, the data has 1,525,871 rows and each row represen
 
 ## Coverage of China
 
-A dictionary-based approach was used. The seed English and German dictionaries from the R package newsmap [@watanabe:2017:N] were used as the basis. The seed dictionaries contain words about Chinese, China, Beijing and Shanghai. We developed further the Spanish, Romanian, Korean, Portugese, Norwegian, and Dutch dictionaries. The dictionaries were applied to the 61 DTMs of all included media outlets. An article is classified as China coverage when at least one dictionary match is detected.
+A dictionary-based approach was used. The seed English and German dictionaries from the R package newsmap [@watanabe:2017:N] were used as the basis. The seed dictionaries contain words about Chinese, China, Beijing and Shanghai. We developed further the Spanish, Romanian, Korean, Portuguese, Norwegian, and Dutch dictionaries. The dictionaries were applied to the 61 DTMs of all included media outlets. An article is classified as China coverage when at least one dictionary match is detected.
 
 <!-- ```{r, echo = FALSE} -->
 <!-- Language <- c("English", "German", "Spanish", "Romanian", "Korean", "Portugese", "Norwegian", "Dutch") -->
@@ -205,11 +205,13 @@ We used negative binomial regression for this analysis. Media outlets are nested
 In lme4 and brms, the equation is expressed as such:
 
 ```r
+require(brms)
+require(lme4)
 # brms
-brms::brm(z ~ offset(log(n)) + (1|k)+log(x),
+brm(z ~ offset(log(n)) + (1|k)+log(x),
           family = negbinomial(), data = outlet_data)
 # lme4
-lme4::glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
+glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
 ```
 
 
@@ -222,7 +224,8 @@ In the disaggregation case, the multilevel structure is ignored and the regressi
 In MASS, it is expressed as such:
 
 ```r
-MASS::glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
+require(MASS)
+glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
 ```
 
 We named the models with different independent variables as model A1-4 respectively (A1: log import volume; A2: log export volume; A3: log physical distance; A4: log cultural distance).
@@ -244,8 +247,8 @@ L_{ijk} &= \pi_{0} + \epsilon_{ijk} \\
 Or in lme4/brms code:
 
 ```r
-brms::brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
-lme4::glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
+brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
+glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
 ```
 
 
@@ -260,14 +263,14 @@ L_{ijk} &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{ijk} \\
 In MASS, it is expressed as such:
 
 ```r
-MASS::glm(y ~ log(x), family = binomial(), data = article_data)
+glm(y ~ log(x), family = binomial(), data = article_data)
 ```
 
 We named this model as model B1.
 
 ### Priors
 
-For the outlet-level analysis, there are four unknown parameters to be estimated: $\gamma_{00}$, $\mu_{0k}$, $\gamma_{01}$ and the negative binomial shape parameter $\phi$. For the article-level analysis, the four unknown paramters are $\gamma_{000}$, $\mu_{00k}$, $\gamma_{001}$ amd $\mu_{0j}$. The idea of choosing priors is to select a probable probability distribution for each of these unknown parameters.
+For the outlet-level analysis, there are four unknown parameters to be estimated: $\gamma_{00}$, $\mu_{0k}$, $\gamma_{01}$ and the negative binomial shape parameter $\phi$. For the article-level analysis, the four unknown parameters are $\gamma_{000}$, $\mu_{00k}$, $\gamma_{001}$ amd $\mu_{0j}$. The idea of choosing priors is to select a probable probability distribution for each of these unknown parameters.
 
 Usually, the first step for choosing priors is to review previous studies and look for possible values to be used as our informative priors. Although @wu:2000:SDI is a possible reference point, we select not to use this because China was not studied. Also, the modeling technique was quite different from the current one.
 
@@ -283,7 +286,7 @@ weaklyinformative_prior <- c(prior_string("normal(0, 1)",
                              prior_string("normal(0, 1)",
                                           class = "Intercept"))
 # The sample_prior argument is optional. But useful for further analysis.
-import_brms <- brms::brm(z~offset(log(n))+(1|k)+log(x_import),
+import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import),
           data = outlet_data, family = negbinomial(),
           prior = weaklyinformative_prior, sample_prior = TRUE)
 import_brms
@@ -297,9 +300,9 @@ Other parameters for Bayesian multilevel regression analysis control how the MCM
 
 Table \@ref(tab:t1) shows a summary of all models from outlet-level analysis using three different ways of modeling. The Bayesian multilevel regression gave the *posterior distribution*, $P(\theta | X)$, of the regression coefficient ($\gamma_{001}$). It is a distribution and therefore we need ways to display both the central tendency and spread of the distribution. By default, *brms* displays the mean and the 95\% high density interval (HDI). [^5] These two values represent the point and interval estimates of the regression coefficient.
 
-[^5]: HDI is one representation of Bayesian credible interval. It is important to note that, like confidence interval, there should be no "correct" choice of the level of credibility, but some established conventions. We choose, like many published works [e.g. @stegmueller:2013:HMC; @kovic:2017:B; @chan2020high], the default value of 95\% is to maintain "compatibility" with traditional approach of reporting 95\% confidence interval. However, there is a general concern about this crediblity level as being unstable for Bayesian analysis [@kruschke2014doing]. Some Bayesians, notably, Andrew Gelman, reports very liberal 50\% credible intervals. @mcelreath2020statistical selects 89\% to show the arbitariness of the practice. @leeuw:2020:AAT select 90\%.
+[^5]: HDI is one representation of Bayesian credible interval. It is important to note that, like confidence interval, there should be no "correct" choice of the level of credibility, but some established conventions. We choose, like many published works [e.g. @stegmueller:2013:HMC; @kovic:2017:B; @chan2020high], the default value of 95\% is to maintain "compatibility" with traditional approach of reporting 95\% confidence interval. However, there is a general concern about this credibility level as being unstable for Bayesian analysis [@kruschke2014doing]. Some Bayesians, notably, Andrew Gelman, reports very liberal 50\% credible intervals. @mcelreath2020statistical selects 89\% to show the arbitrariness of the practice. @leeuw:2020:AAT select 90\%.
 
-Consistently, point estimates are remarkably similar. Bayesian multilevel regression gave a wider 95% HDI than confidence intervals from frequentist methods. It is similar to previous studies [@stegmueller:2013:HMC; @elff:2020:MAF]. The results indicate that only a higher export or import volume with China and the host country of the media outlet is associated with more reporting China. While the frequentist confidence intervals and the Bayesian credible interval seem to be similar, they are from a philosophical point of view totally different and lead to different forms of infference. The Bayesian approach alloows us to say that *given the observed data, the true estimate of log import volume has 95% probability of falling witin  0.18 and 0.33*. In contrast, the frequentist confidence interval only allows us to say that *when computing a confidence interval from the same type of data in repeated studies, 95% of the confidence intervals will include the true estimate of log import volume*. One of the misconceptions of frequentist confidence intervals is that they can be interpreted in a Bayesian way [@morey:2015]. This example illustrates that a Bayesian approach allows us to interpret the results in a more intutitive way.
+Consistently, point estimates are remarkably similar. Bayesian multilevel regression gave a wider 95% HDI than confidence intervals from frequentist methods. It is similar to previous studies [@stegmueller:2013:HMC; @elff:2020:MAF]. The results indicate that only a higher export or import volume with China and the host country of the media outlet is associated with more reporting China. While the frequentist confidence intervals and the Bayesian credible interval seem to be similar, they are from a philosophical point of view totally different and lead to different forms of inference. The Bayesian approach allows us to say that *given the observed data, the true estimate of log import volume has 95% probability of falling within  0.18 and 0.33*. In contrast, the frequentist confidence interval only allows us to say that *when computing a confidence interval from the same type of data in repeated studies, 95% of the confidence intervals will include the true estimate of log import volume*. One of the misconceptions of frequentist confidence intervals is that they can be interpreted in a Bayesian way [@morey:2015]. This example illustrates that a Bayesian approach allows us to interpret the results in a more intuitive way.
 
 Table: (\#tab:t1) Point and interval estimates from outlet-level analysis using three different analytic strategies: Disaggregation approach, multilevel modeling using MLE and Bayesian multililevel modeling
 
@@ -339,7 +342,7 @@ The first step is Gelman-Rubin convergence diagnostic [@brooks:1998:GMM; @vehtar
 
 The second step is the MCMC trace plot (can be obtained with the function *plot()*). The traceplot should display the so-called "fuzzy caterpillar" pattern (Figure \@ref(fig:fig1)). There should be no breakage.
 
-```{r fig1, echo = FALSE, fig.cap = "The right panel in the MCMC trace plot from plot() function showing the fuzzy catepillar pattern."}
+```{r fig1, echo = FALSE, fig.cap = "The right panel in the MCMC trace plot from plot() function showing the fuzzy caterpillar pattern."}
 require(brms)
 import_brms <- readRDS("import_brms.RDS")
 plot(import_brms)
@@ -378,7 +381,7 @@ pp_check(import_brms, nsamples = 100)
 
 # Discussion
 
-Instead of arguing the advatnages of Bayesian multilevel regression analysis once again like we did in the introduction, we propose several extensions to the above barebone analysis. The analyses in these extensions are not preregistered.
+Instead of arguing the advantages of Bayesian multilevel regression analysis once again like we did in the introduction, we propose several extensions to the above barebone analysis. The analyses in these extensions are not preregistered.
 
 ## Extension #1: Hypothesis testing
 
@@ -400,14 +403,14 @@ We can model a cross-level interaction by adding an interaction term between the
 
 ```r
 # suppose "public" is a binary variable
-import_brms_public <- brms::brm(
+import_brms_public <- brm(
       z~offset(log(n))+(1 + public|k)+log(x_import)*public,
       data = outlet_data, family = negbinomial(),
       prior = weaklyinformative_prior, sample_prior = TRUE)
 import_brms_public
 ```
 
-The regression coefficients for the main effect of public broadcasting and the interaction terms have a wide 95\% HDI that covers zero. It can be visualized with a conditional effects plot (Figure \@ref(fig:fig4), using the *conditional_effects()* function). The trajectories of public broadcastors and for-profit media outlets are similar, indicating no interaction.
+The regression coefficients for the main effect of public broadcasting and the interaction terms have a wide 95\% HDI that covers zero. It can be visualized with a conditional effects plot (Figure \@ref(fig:fig4), using the *conditional_effects()* function). The trajectories of public broadcasters and for-profit media outlets are similar, indicating no interaction.
 
 ```{r fig4, echo = FALSE, fig.cap = "Conditional effects plot showing no interaction among public broadcasting, import volume and China coverage."}
 require(ggplot2)
@@ -448,9 +451,9 @@ The regression coefficient for the year dummy variable is 0.49 (95\% HDI 0.38, 0
 
 # Conclusion
 
-In this paper, we argue the case for using Bayesian multilevel regression analysis to analyse data from comparative content analyses. We demonstrate using the openly available useNews dataset that Bayesian analysis provides valid inference of ecological effects and can be done easily with the R package *brms*. Using a Bayesian approach, however, has also clearly some disadvantages. Reserachers have to define priors in order to run a Bayesian regression analysis. As we could show this limitation does not pose a controversial challenge as weakly informative prios can be chosen and in most cases enough data is available and thus the priors have almost no influence on the posterior distribution of the parameters. If we have prior knowledge it allows us to create even better models. Furthermore, it takes more time to get the results of a Bayesian regression analysis. Estimating a Bayesian regression model is a computationally demanding task. It took 4 days on a regular computer to get the results of the Bayesian regression model with 1,525,871 articles (Model B1). Still, eventually it worked and typical studies in comparative journalism research [e.g. 6525 articles in @esser:2013:C] can be estimated in a reasonable time [^TIME]. 
+In this paper, we argue the case for using Bayesian multilevel regression analysis to analyze data from comparative content analyses. We demonstrate using the openly available useNews dataset that Bayesian analysis provides valid inference of ecological effects and can be done easily with the R package *brms*. Using a Bayesian approach, however, has also clearly some disadvantages. Researchers have to define priors in order to run a Bayesian regression analysis. As we could show this limitation does not pose a controversial challenge as weakly informative priors can be chosen and in most cases enough data is available and thus the priors have almost no influence on the posterior distribution of the parameters. If we have prior knowledge it allows us to create even better models. Furthermore, it takes more time to get the results of a Bayesian regression analysis. Estimating a Bayesian regression model is a computationally demanding task. It took 4 days on a regular computer to get the results of the Bayesian regression model with 1,525,871 articles (Model B1). Still, eventually it worked and typical studies in comparative journalism research [e.g. 6525 articles in @esser:2013:C] can be estimated in a reasonable time frame [^TIME]. 
 
-[^TIME]: We benchmarked the same model but with a random subset of data of some more "typical" sample sizes. A model with a large sample size of 30,000 can be estimated in less than 17 minutes on a typical computer with 6 cores. Although it is comparatively more computational intensive than lme4, the time needed is still reasonable.
+[^TIME]: We benchmarked the same model B1 but with subsets of data of some more "typical" sample sizes. A model with a large sample size of 30,000 can be estimated in less than 17 minutes on a typical 6-core computer. Although it is comparatively more computational intensive than *lme4*, the time needed is still reasonable.
 
 # References
 
