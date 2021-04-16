@@ -79,5 +79,7 @@ res_df <- map2_dfr(media1k$i, media1k$lang, cal_china2, wm = wm, china_dict = ch
 
 res_df %>% left_join(media1k, by = "i") %>% left_join(countries, by = "country") %>% as_tibble %>% mutate(china = ifelse(china == 0, 0, 1)) -> article_level_data
 
-import_brms_log <- brm(china~(1|country/media)+log(import), data = article_level_data, family = bernoulli(), control = list(adapt_delta = 0.9), core = 6)
-saveRDS(import_brms_log, "import_logit.RDS")
+saveRDS(article_level_data, "article_level_data.RDS")
+
+##import_brms_log <- brm(china~(1|country/media)+log(import), data = article_level_data, family = bernoulli(), control = list(adapt_delta = 0.9), core = 6)
+##saveRDS(import_brms_log, "import_logit.RDS")
