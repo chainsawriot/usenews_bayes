@@ -58,7 +58,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 *"The comparative approach attempts to reach conclusions beyond single cases and explains differences and similarities between objects of analysis against the backdrop of their contextual conditions."* @esser:2017:CRM
 
-Comparative content analysis is a frequently used research design in journalism studies. Comparative content analysis is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI], among others. A typical comparative content analysis in journalism research includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative content analysis studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
+Comparative content analysis is a frequently used research design in journalism studies. Comparative content analysis is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. A typical comparative content analysis in journalism research includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative content analysis studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
 
 This study of ecological effect on individual behaviours has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found the higher suicide rate among citizens from Scandinvian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative content analysis. An example of hypothesis-generating comparative content analysis is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative content analysis, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative content analysis introduces a feature that researchers usually overlook: media contents are clustered in multilevel. A news article is nested within its media outlet and its media outlet is in turn nested within its country. Theoretically with a large enough sample it can be argued that a news article is nested within authors. Such data structure brings two problems: non-atomicity and non-stochasticity.
 
@@ -88,7 +88,7 @@ There are two solutions to this. The first solution is to aggregate the micro-le
 
 \begin{equation}
   \label{eq:2}
-  z_{k} = \beta_{0} + \beta_{1} x_{k} + \epsilon_{k}
+  \log{z_{k}} = \beta_{0} + \beta_{1} x_{k} + \epsilon_{k}
 \end{equation}
 
 Using this aggregation method, the unit of analysis effectively switches from article to country. This method is useful when $x$ is the only independent variable, akin @esser:2013:C. It is not technically committing atomistic fallacy, when one uses the value of slope as the evidence for an ecological effect. However, this method still has important drawbacks. First, it cannot be used for data with more than two levels. In @esser:2013:C, for example, multiple media outlets from the same country were lumped together and in effect, assumed to be homogenous and the information about media outlets was discarded. Second, this method discards a massive amount of information. It is better for analysis of a dependent micro-level variable with a reasonably aggregation function (e.g. counting a binary variable). For numerical variables, aggregation functions such as taking a mean or median cannot capture the spread of the micro-level variable [@bryk:1988:H]. Also, the effective sample size is reduced from the number of articles ($m$) to the number of countries ($n$). Nonetheless, this aggregation method, although inflexible, is still useful when the number of groups (e.g. $n$) is large. It is also useful to collapse micro-levels (e.g. article-level) that are not useful in answering one’s research questions.
@@ -143,7 +143,7 @@ The $P(X| \theta)$ part is called likelihood function. In the $Digital Journalis
 
 We skip elaborating part 1, because some, but certainty not all, researchers have the means to amass a massive amount. The mechanism of how part 2 can be used to derive the likelihood function is beyond the scope of this paper. <!-- We provide a tutorial in Appendix I(+++TODO) for those who want to get an intuition. --> The current standard method, MCMC, is much more computationally intensive and has only been possible on desktop computer since mid-1990s [@robert:2011:SHM]. And only in the last few years that can be done efficiently [@hoffman2014no], thanks to the probablistic programming language *Stan* [@gelman:2015:S]. R interfaces to Stan, such as *brms* [@burkner2017advanced], make Bayesian analysis even more accessible to R users. But still, it is important to be mindful that Bayesian analysis is much more computational intensive than methods such as MLE. Our benchmark suggests that Bayesian analysis needs at least 100 times more running time than MLE.
 
-Part 3 (Prior) is arguably the most controversial part of Bayesian analysis. In the *Digital Journalism* example, we can select a reasonable prior (or **informative** prior) of 24% from published information. More often than not, we do not have any information to set an informative prior (e.g. What about *Journal of Communication*?). One option is to consult experts or to make an educated guess. But one person's expert opinion could be another person's wishful thinking. And this perceived subjectivity of specifying priors attracts wide-spread criticism from both statisticians [e.g. @efron1986isn] and social scientists [@elff:2020:MAF;@bryan:2015:MMC].
+Part 3 (Prior) is arguably the most controversial part of Bayesian analysis. In the *Digital Journalism* example, we can select a reasonable prior (or **informative** prior) of 24% from published information. More often than not, we do not have any information to set an informative prior (e.g. What about a new journal?). One option is to consult experts or to make an educated guess. But one person's expert opinion could be another person's wishful thinking. And this perceived subjectivity of specifying priors attracts wide-spread criticism from both statisticians [e.g. @efron1986isn] and social scientists [@elff:2020:MAF;@bryan:2015:MMC].
 
 Undoubtedly, setting prior is consequential to the analysis [@van:2006:PB]. But the influence from prior is greatly weakened, when the data is getting bigger. Also, one can select a weakly informative prior [@lemoine:2019:M] which only specifies the possible range of the posterior [^4]. Some so-called "default weakly informative priors", e.g. $\mathcal{t}(1, 0, 0.25)$, have been suggested for typical regression models [@gelman:2008]. The documentation of Stan also provides information on how to choose an appropriate prior (https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations). 
 
@@ -186,7 +186,7 @@ A dictionary-based approach was used. The seed English and German dictionaries f
 
 ## Distance measures
 
-Several distance measures were used as the independent variable to test our central research questions: physical distance, trade volume, and cultural distance. Physical distance is calculated as the Great-circle distance between Beijing and the capital of the hosting city of the media outlet (e.g. Bucharest). The volumes of import to and export from China with the host country of a media outlet was extracted from the 2019 edition of China Statistical Yearbook (http://www.stats.gov.cn/tjsj/ndsj/2019/indexeh.htm). Cultural distance from China to the host country of a media outlet was extracted from culturaldistance.com, which was calculated using the data from World Value Survey with the algorithm from @bell:2009:C. All of these distance measures were log-transformed.
+Several distance measures were used as the independent variable to test our central research questions: physical distance, trade volume, and cultural distance. Physical distance is calculated as the Great-circle distance between Beijing and the capital of the hosting city of the media outlet (e.g. Bucharest). The volumes of import to and export from China with the host country of a media outlet was extracted from the 2019 edition of China Statistical Yearbook (http://www.stats.gov.cn/tjsj/ndsj/2019/indexeh.htm). Cultural distance from China to the host country of a media outlet was extracted from culturaldistance.com, which was calculated using the data from World Value Survey with the algorithm from @bell:2009:C. All of these distance measures were log-transformed, because previous studies showed the relationship between news coverage and these distance measures is not linear [@grasland:2019:I;@wu:2000:SDI].
 
 ## Modeling
 
@@ -194,10 +194,12 @@ For all analyses, we tried 3 different approaches: 1) Disaggregation approach (i
  
 ### Outlet-level analysis
 
-We used negative binomial regression for this analysis. Media outlets are nested in countries (e.g. *Der Standard* and *Österreichischer Rundfunk* are nested in Austria). Thus, a country-based variance is added ($\mu_{0k}$). Applying the same notation under the introduction section, the multilevel regression equations are:
+We used negative binomial regression for this analysis. Media outlets are nested in countries (e.g. *Der Standard* and *Österreichischer Rundfunk* are nested in Austria). Thus, a country-based variance is added ($\mu_{0k}$). We also added $\log{n_{j}}$ as an offset value. An offset value is a term that does not have the associated regression coefficient at the right-hand side of the regression equation \@ref(eq:2). Effectively, we modeled the *rate* of China coverage. Applying the same notation under the introduction section, the multilevel regression equations are:
 
 \begin{align}
-\log(\frac{z_{jk}}{n_{j}}) &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \epsilon_{jk}
+\log{z_{jk}} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \log{n_j} + \epsilon_{jk} \\
+\log{z_{jk}} - \log{n_j} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} +  \epsilon_{jk} \\
+\log\frac{z_{jk}}{n_{j}} &= \gamma_{00} + \mu_{0k} + \gamma_{01} x_{k} + \epsilon_{jk} \\
 \end{align}
 
 In lme4 and brms, the equation is expressed as such:
@@ -214,7 +216,7 @@ lme4::glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
 In the disaggregation case, the multilevel structure is ignored and the regression equation becomes:
 
 \begin{align}
-\log(\frac{z_{jk}}{n_{j}}) &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{j}
+\log\frac{z_{jk}}{n_{j}} &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{j}
 \end{align}
 
 In MASS, it is expressed as such:
@@ -310,16 +312,24 @@ Table: (\#tab:t1) Point and interval estimates from outlet-level analysis using 
 
 Model B1 confirms the above again (Table \@ref(tab:t2) ). Therefore, both article- and outlet-level analyses arrive at the same conclusion.
 
-```{r t2, results = "asis"}
-### TODO: to prim it further
-require(brms)
-require(parameters)
-require(dplyr)
-article_level <- readRDS("import_logit.RDS")
-article_level %>% parameters(ci = 0.95, effects = "fixed", dispersion = TRUE, centrality = "mean", test = "pd") %>% as.data.frame -> res
+<!-- ```{r t2, results = "asis"} -->
+<!-- ### TODO: to prim it further -->
+<!-- require(brms) -->
+<!-- require(parameters) -->
+<!-- require(dplyr) -->
+<!-- article_level <- readRDS("import_logit.RDS") -->
+<!-- article_level %>% parameters(ci = 0.95, effects = "fixed", dispersion = TRUE, centrality = "mean", test = "pd") %>% as.data.frame -> res -->
 
-res %>% dplyr::select(Parameter, Mean, SD, CI_low, CI_high) %>% rename(Estimate = Mean) %>% knitr::kable(format = "markdown", caption = "Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country", digits = 2)
-```
+<!-- res %>% dplyr::select(Parameter, Mean, SD, CI_low, CI_high) %>% rename(Estimate = Mean) %>% knitr::kable(format = "markdown", caption = "Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country", digits = 2) -->
+<!-- ``` -->
+
+Table: (\#tab:t2) Bayesian multilevel logistic regression analyzing the article-level likelihood of China coverage in relation to log import volume of the outlet's country
+
+| Parameter                          | Estimate | SD   | 95 \%HDI       |
+|:-----------------------------------|:---------|------|----------------|
+| $\gamma_{000}$ (Intercept)         | -7.06    | 0.81 | (-8.61, -5.44) |
+| $\gamma_{001}$ (Log import volume) | 0.27     | 0.06 | (0.16, 0.38)   |
+
 
 ## Diagnosis of convergence
 
