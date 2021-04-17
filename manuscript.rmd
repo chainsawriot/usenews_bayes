@@ -3,23 +3,29 @@ title             : "The Bayesian turn in comparative communication research"
 shorttitle        : "BAYESIAN MULTILEVEL REGRESSION"
 
 author: 
-  - name          : "(redacted)"
+  - name          : "Chung-hong Chan"
     affiliation   : "1"
     corresponding : yes
+    address       : "A5, 6 (section A), 68159 Mannheim, Germany"
+    email         : "chung-hong.chan@mzes.uni-mannheim.de"
+  - name          : "Adrian Rauschfleisch"
+    affiliation   : "2"    
 
 affiliation:
   - id            : "1"
-    institution   : "Planet dust"
+    institution   : "Mannheimer Zentrum für Europäische Sozialforschung, Universität Mannheim, Germany"
+  - id            : "2"
+    institution   : "National Taiwan University, Taiwan"
     
 authornote: |
-  (redacted).
+  The authors would like to thank professor Kasper Welbers (Vrije Universiteit Amsterdam) for his advice on the development of the Dutch dictionary; Dr Junior Yuner Zhu (City University of Hong Kong) for sharing details about her study.
   Source code and data are available at (redacted). Prereg: https://osf.io/2h4w8/
 
 abstract: |
   Comparative approach such as comparative content analysis is frequently used in journalism studies. The purpose of this paper is to argue that researchers should refrain from using current (frequentist) analytical approaches to analyze data from a comparative study. It is because current approaches cannot account for non-atomicity (nested nature) and non-stochasticity (non-random sampling) of the data. Bayesian multilevel regression is suggested to be a ---and probably, the only--- valid analytical approach. Using the openly available *useNews* data and the R package *brms*, we demonstrate how to apply such approach for the analysis of comparative data. We also address common queries of the approach such as choosing the priors and diagnosing the convergence of the model. Furthermore, we argue that choosing a Bayesian approach also solves the problem of often misinterpreted frequentist confidence intervals.
   
 keywords          : "Bayesian inference, multilevel model, comparative communication research, ecological effect"
-wordcount         : "0"
+wordcount         : "7509"
 
 bibliography      : ["manuscript.bib"]
 
