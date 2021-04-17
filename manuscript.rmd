@@ -25,7 +25,7 @@ abstract: |
   Comparative approach such as comparative content analysis is frequently used in journalism studies. The purpose of this paper is to argue that researchers should refrain from using current (frequentist) analytical approaches to analyze data from a comparative study. It is because current approaches cannot account for non-atomicity (nested nature) and non-stochasticity (non-random sampling) of the data. Bayesian multilevel regression is suggested to be a ---and probably, the only--- valid analytical approach. Using the openly available *useNews* data and the R package *brms*, we demonstrate how to apply such approach for the analysis of comparative data. We also address common queries of the approach such as choosing the priors and diagnosing the convergence of the model. Furthermore, we argue that choosing a Bayesian approach also solves the problem of often misinterpreted frequentist confidence intervals.
   
 keywords          : "Bayesian inference, multilevel model, comparative communication research, ecological effect"
-wordcount         : "0"
+wordcount         : "7509"
 
 bibliography      : ["manuscript.bib"]
 
