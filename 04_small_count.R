@@ -37,10 +37,24 @@ weaklyinformative_prior <- c(prior_string("normal(0, 1)", class = "b"), prior_st
 import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import), data = outlet_data, family = negbinomial(), control = list(adapt_delta = 0.99), prior = weaklyinformative_prior, sample_prior = TRUE)
 saveRDS(import_brms, "import_brms.RDS")
 
+## ## the output of the function scale() is a column matrix
+## ## use [,1] to convert it to vector
+## outlet_data$normalized_x_import <- scale(log(outlet_data$x_import))[,1]
+
+## import_brms_norm <- brm(z~offset(log(n))+(1|k)+normalized_x_import, data = outlet_data, family = negbinomial(), control = list(adapt_delta = 0.99), prior = weaklyinformative_prior, sample_prior = TRUE)
+## saveRDS(import_brms_norm, "import_brms_norm.RDS")
+
+set.seed(1010120)
+outlet_data$noise <- runif(nrow(outlet_data))
+## outlet_data$normalized_noise <- scale(outlet_data$noise)[,1]
+
+noise_brms <- brm(z~offset(log(n))+(1|k)+noise, data = outlet_data, family = negbinomial(), control = list(adapt_delta = 0.99), prior = weaklyinformative_prior, sample_prior = TRUE)
+rope(noise_brms_norm) ## 59%
 
 ## svg("fig1.svg")
 ## plot(import_brms)
 ## dev.off()
+
 
 conditional_effects(import_brms)
 
