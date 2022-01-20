@@ -57,13 +57,15 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 *"The comparative approach attempts to reach conclusions beyond single cases and explains differences and similarities between objects of analysis against the backdrop of their contextual conditions."* @esser:2017:CRM
 
-Communication research is often comparative, journalism studies are no exception. For example, comparative approach is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. A typical comparative study in journalism research, otherwise known as comparative content analysis, includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Although some comparative studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level.
+Communication research is often comparative, journalism studies are no exception. For example, comparative approach is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. A typical comparative study in journalism research, otherwise known as comparative content analysis, includes news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Surveys in journalism research are often comparative, e.g. the Worlds of Journalism Study (WJS) [@hanusch:2017:CJC].
+
+Although some comparative studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) and their countries (e.g. post-communist country) influence the content of news articles or behaviours of journalists. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content and journalistic behaviors in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g. newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g. degree of opinion-orientation), namely, the article-level or journalist-level.
 
 This study of ecological effects on individual behaviors has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found the higher suicide rate among citizens from Scandinavian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative research. An example of hypothesis-generating comparative research is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative study, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative research introduces a feature that researchers usually overlook: media contents are clustered in a multilevel structure. A news article is nested within its media outlet and its media outlet is in turn nested within its country [^author]. Such data structure brings two problems: non-atomicity and non-stochasticity.
 
 [^author]: Theoretically with a large enough data it can be argued that a news article is nested within authors.
 
-In our paper we first discuss these two issues before we suggest Bayesian multilevel regression as a standard approach for comparative research in journalism studies. While Bayesian models might be slightly more complicated to estimate in contrast to frequentist models as priors have to be chosen, these models allow researchers to make "principled statements about precision and plausibility" [@morey:2015 p. 121] and solve the issue of misinterpreted confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Using the openly available *useNews* data and the R package *brms*, we then demonstrate how to apply a Bayesian approach for the analysis.
+In our paper we first discuss these two issues before we suggest Bayesian multilevel regression as a standard approach for comparative research in journalism studies. While Bayesian models might be slightly more complicated to estimate in contrast to frequentist models as priors have to be chosen, these models allow researchers to make "principled statements about precision and plausibility" [@morey:2015 p. 121] and solve the issue of misinterpreted confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Using the openly available *useNews* and WJS datasets and the R package *brms*, we then demonstrate how to apply a Bayesian approach for the analysis of comparative data.
 
 ## Non-atomicity
 
@@ -121,13 +123,15 @@ Multilevel modeling is the way to go for analyzing non-atomic data from comparat
 
 Before diving into our theoretical reasoning, it is important to revisit what frequentist inference, the current default but often misunderstood [@rinke:2018:PMA] mode of inference in communication science, is. Under the frequentist framework, each experiment is assumed to be one of infinite independent, **repeatable** experiments on randomly drawn samples from a population. Random experiments are assumed to be repeated arbitrarily often. Based on this assumption and with just one experiment from the current study, we make an estimation about the population. The discrepancy between the estimation from that one experiment and the actual value of the population is due to sampling error alone, i.e. which subjects were randomly sampled from the population. Randomized surveys, for example, are assumed to be repeatable through repeated random sampling of the population. Suppose we replicated the same survey for 100 times and we would obtain a slightly different sample every time. We then calculated the 90\% confidence interval of the mean for each of these 100 surveys. We should anticipate that more or less 90 out of these 100 confidence intervals would include the true mean of the population. We cannot say for sure exactly 90 out of these 100 confidence intervals would include the true mean of the population because repeated random sampling is indeed random and the process is **stochastic**. However, we can say 90 is more probable than 0 or 100.
 
-Comparative research in journalism studies, unlike randomized surveys or randomized media experiments, usually collects all available data. In contrast to sampling, these studies are actually doing census of all data and there is no way to get more data unless the scope of these studies is changed [@berk:1995:SIA]. It is especially true for modern large-N studies using automated content analytic techniques. @burggraaff:2017:T, for instance, "collected all available news items from a selection of major Dutch news outlets, both online and print" (p. 6) and that amounted to 762,095 articles from 9 outlets in the period of 2014--2015.
+Comparative content analytic studies in journalism studies, unlike randomized surveys or randomized media experiments, often collect all available data. In contrast to sampling, these studies are actually doing census of all data. There is no way to get more data unless the scope of these studies is changed [@berk:1995:SIA]. It is especially true for modern large-N studies using automated content analytic techniques. @burggraaff:2017:T, for instance, "collected all available news items from a selection of major Dutch news outlets, both online and print" (p. 6) and that amounted to 762,095 articles from 9 outlets in the period of 2014--2015.
 
 Census-style studies are not repeatable and thus they generate non-stochastic data. In other words, data from comparative journalism studies are fundamentally irrelevant for frequentist inference [@western:1994:BIC]. P-values and confidence intervals generated do not have the same meaning as those from repeatable studies. According to @western:1994:BIC [p. 413], these values from non-stochastic data "lack meaning even as abstract propositions".
 
 A common counterargument to this is the classic one from @deming:1941:ICS [p. 45], who suggested that "[a]s a basis for scientific generalizations and decisions for action, a census is only a sample." This notion assumes a census of a population can be used to make inference on a theoretical device called *superpopulation* which "theoretically could exist, may have existed, or may exist in the future" [@gibbs:2015:IU, p.3]. In other words, a finite census-as-a-sample census is assumed to be a “representative sample” of an infinite superpopulation. This counterargument could be useful but unlike a regular sample, whose representativeness can be assessed, we can never assess the representativeness of the census with respect to the theoretical superpopulation. Echoing the quote at the beginning of this paragraph, there is no way to tell if the current Czech history is representative of all possible Czech histories in the multiple parallel universes.
 
 Instead of invoking the theoretical device of superpopulation, we follow the arguments from @western:1994:BIC and @stegmueller:2013:HMC for comparative studies: Bayesian inference should be used for analyzing data from comparative research in our field. Choosing a Bayesian approach also solves the problem of misinterpretation of confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Switching to a Bayesian approach addresses this issue as Bayesian "credible intervals support an interpretation of probability in terms of plausibility" [@morey:2015, p.120]. <!-- However, for Bayesian models so-called priors have to be chosen by researchers. -->
+
+Before we move on to the next section, it is important to point that **non-stochastic data is not an essential condition for applying the Bayiesan approach**. The same approach is equally applicable to both non-stochastic and stochastic comparative datasets. Therefore, one can analyse both randomized comparative surveys (such as WJS) and comparative content analytic studies with the same Bayesian analytic approach.
 
 ## Bayesian analysis
 
@@ -163,11 +167,13 @@ Undoubtedly, setting prior is consequential to the analysis [@van:2006:PB]. But 
 
 *"There is a general challenge to a prescription of more widespread use of Bayesian methods for multilevel modeling, and that is that such methods require statistical expertise beyond that of most applied social science researchers, as well as specialist software (or software with which such researchers are unfamiliar)."* @bryan:2015:MMC [p. 19]
 
-Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method [e.g. @kovic:2017:B;@chan2020high] these studies are not comparative. As far as we know, the only available comparative research in journalism studies that Bayesian multilevel regression was used for studying ecological effect is @leeuw:2020:AAT. We believe comparative communication research fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], the main purpose of this paper is to demonstrate how to practically implement one using the R package *brms* [@burkner2017advanced]. As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. The above quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modeling is no longer an issue. 
+Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method [e.g. @kovic:2017:B;@chan2020high] these studies are not comparative. As far as we know, the only available comparative research in journalism studies that Bayesian multilevel regression was used for studying ecological effect is @leeuw:2020:AAT. We believe comparative communication research fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], the main purpose of this paper is to demonstrate how to actually do the analysis using the R package *brms* [@burkner2017advanced]. As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. The above quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modeling is no longer an issue. 
 
-# Methods
+The two examples below show how the Bayesian multilevel regression analysis can be deployed to the common archtypes of comparative journalism studies. The first example is an analysis of a comparative, non-stochastic content analytic dataset. The second example is an analysis of a comparative, stochastic survey dataset.
 
-We used the useNews dataset [@puschmann:2020] to demonstrate how to perform a typical Bayesian multilevel regression analysis. The analysis was guided by a classic question in news value research: Does the distance between China and the host country of a media outlet increase the frequency of China coverage? In other words, we studied the ecological effect of the distance from China on the frequency of China coverage. Several distance measures were used to formulate our pre-registered hypotheses: physical distance between two capitals, trade volume between two countries, and cultural distance between two societies.
+# Example 1: useNews
+
+We used the useNews dataset [@puschmann:2020] to demonstrate how to perform a typical Bayesian multilevel regression analysis on a nonstochastic comparative dataset. The analysis was guided by a classic question in news value research: Does the distance between China and the host country of a media outlet increase the frequency of China coverage? In other words, we studied the ecological effect of the distance from China on the frequency of China coverage. Several distance measures were used to formulate our pre-registered hypotheses: physical distance between two capitals, trade volume between two countries, and cultural distance between two societies.
 
 For demonstrative purposes, our analysis was separated into two levels: outlet-level analysis and article-level analysis. The outlet-level analysis is an aggregated version of article-level analysis. It is used to demonstrate the flexibility of Bayesian analysis to handle two-level data with a very small data size. The article-level analysis is used to demonstrate the analysis of a massive three-level dataset.
 
@@ -279,7 +285,7 @@ glm(y ~ log(x), family = binomial(), data = article_data)
 
 We named this model as model B1.
 
-### Priors
+## Priors
 
 For the outlet-level analysis, there are four unknown parameters to be estimated: $\gamma_{00}$, $\mu_{0k}$, $\gamma_{01}$ and the negative binomial shape parameter $\phi$. For the article-level analysis, the four unknown parameters are $\gamma_{000}$, $\mu_{00k}$, $\gamma_{001}$ and $\mu_{0j}$. The idea of choosing priors is to select a probable probability distribution for each of these unknown parameters.
 
@@ -307,7 +313,7 @@ import_brms
 
 Other parameters for Bayesian multilevel regression analysis control how the MCMC should be performed. Three parameters are important: number of iterations, number of chains and *adapt_delta*. They are not some magic numbers that you can plug and play. However, it is in general safe to use the default values, i.e. number of iterations = 2000, number of chains = 4 and *adapt_delta* = 0.8, unless MCMC shows evidence of nonconvergence. *brms* is smart enough to give suggestions on how to adjust these three values. Nonetheless, we provide a short guide on how to diagnose convergence.
 
-# Regression results
+## Regression results
 
 Table \@ref(tab:t1) shows a summary of all models from outlet-level analysis using three different ways of modeling. The Bayesian multilevel regression gave the *posterior distribution*, $P(\theta | X)$, of the regression coefficient ($\gamma_{001}$). It is a distribution and therefore we need ways to display both the central tendency and spread of the distribution. By default, *brms* displays the mean and the 95\% high density interval (HDI). [^5] These two values represent the point and interval estimates of the regression coefficient.
 
@@ -344,7 +350,7 @@ Table: (\#tab:t2) Bayesian multilevel logistic regression analyzing the article-
 | $\gamma_{000}$ (Intercept)         | -7.06    | 0.81 | (-8.61, -5.44) |
 | $\gamma_{001}$ (Log import volume) | 0.27     | 0.06 | (0.16, 0.38)   |
 
-## Diagnosis of convergence
+### Diagnosis of convergence
 
 It is important to confirm the model is converged. We demonstrate how to confirm this with model A1.
 
@@ -366,7 +372,7 @@ If the diagnostics show evidence of nonconvergence, it is suggested to increase 
 mcmc_plot(import_brms, type = "acf")
 ```
 
-## Further diagnostics
+### Further diagnostics
 
 There are several diagnostic checks that we can do to make sure our model is valid.
 
@@ -388,11 +394,11 @@ We can use posterior predictive checks to study how our model fits our data. The
 pp_check(import_brms, nsamples = 100)
 ```
 
-# Discussion
+## Extentions
 
-Instead of arguing the advantages of Bayesian multilevel regression analysis once again like we did in the introduction, we propose several extensions to the above barebone analysis. The analyses in these extensions are not preregistered.
+We propose several extensions to the above barebone analysis. The analyses in these extensions are not preregistered.
 
-## Extension #1: Hypothesis testing
+### Extension #1: Hypothesis testing
 
 Under the Bayesian framework, we can test hypotheses about the parameter estimates [@shikano:2019:HTB]. These hypotheses are similar to the null hypothesis in the Neyman-Pearson's sense. For example, we want to test the two-sided hypothesis of $\gamma_{01} = 0$ for Model A1. For this, we need to calculate the posterior probability of this hypothesis: $P(\gamma_{01} = 0 | X)$. The function *hypothesis()* can be used to test such hypothesis.
 
@@ -442,7 +448,7 @@ In this situation, the proportion of 95\% HDI falls inside the ROPE is 68\%. The
 
 One should note that the decision rules by @kruschke:2018:RAP depend on many methodological decisions, e.g. how to determine the ROPE, how wide should the ROPE be, and which level of HDI to use. ROPE is also sensitive to the scale of measurement. Nonetheless, ROPE can provide much richer information to inform how future studies should be designed. 
 
-## Extension #2: Cross-level interaction
+### Extension #2: Cross-level interaction
 
 We can also study the interaction between a macro- and a micro-level variable. Cross-level interaction is useful to study how the effect of context variables manifest differently in individuals with different characteristics. An example of cross-level interaction in our example is whether the relationship between import volume and increase in China coverage manifests differently between public broadcasters and for-profit media. 
 
@@ -465,7 +471,7 @@ condit_plots <- readRDS("condit_plots.RDS")
 condit_plots$`x_import:public` + xlab("Import Volume") + ylab("Number of articles mentioning China per 10,000 articles") + scale_x_continuous(labels = scales::comma) + theme_minimal() + scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2")
 ```
 
-## Extension #3: Current study as the informative prior for the next study
+### Extension #3: Current study as the informative prior for the next study
 
 Suppose we would like to replicate the study and confirm the same relationship with the 2020 useNews data. This time, we do not need to (and actually, we should not) use the weakly informative prior again. It is because we have *prior* understanding about the outlet-level determinants of China coverage: We know from the 2019 data that $\gamma_{01}$ should be around 0.25 with a standard deviation of 0.05. This can be entered into our new analysis as the informative prior.
 
@@ -496,9 +502,13 @@ import_long
 
 The regression coefficient for the year dummy variable is 0.49 (95\% HDI 0.38, 0.60). There is a global increase in China coverage from 2019 to 2020.
 
+# Example 2: The Worlds of Journalism study
+
+Example 1 above demonstrated how to conduct a Bayesian multilevel regression analysis. In this example, the same approach is applied to a stochastic dataset from a randomize survey. 
+
 # Conclusion
 
-In this paper, we argue the case for using Bayesian multilevel regression analysis to analyze data from comparative communication research. We demonstrate using the openly available useNews dataset that Bayesian analysis provides valid inference of ecological effects and can be done easily with the R package *brms*. Using a Bayesian approach, however, has also clearly some disadvantages. Researchers have to define priors in order to run a Bayesian regression analysis. As we could show this limitation does not pose a controversial challenge as weakly informative priors can be chosen and in most cases enough data is available and thus the priors have almost no influence on the posterior distribution of the parameters. If we have prior knowledge it allows us to create even better models. Furthermore, it takes more time to get the results of a Bayesian regression analysis. Estimating a Bayesian regression model is a computationally demanding task. It took 4 days on a regular computer to get the results of the Bayesian regression model with 1,525,871 articles (Model B1). Still, eventually it worked and typical studies in comparative journalism research [e.g. 6,525 articles in @esser:2013:C] can be estimated within a reasonable time frame [^TIME]. 
+In this paper, we argue the case for using Bayesian multilevel regression analysis to analyze data from comparative communication research. We demonstrate using the openly available useNews and WJS datasets that Bayesian analysis provides valid inference of ecological effects and can be done easily with the R package *brms*. Using a Bayesian approach, however, has also clearly some disadvantages. Researchers have to define priors in order to run a Bayesian regression analysis. As we could show this limitation does not pose a controversial challenge as weakly informative priors can be chosen and in most cases enough data is available and thus the priors have almost no influence on the posterior distribution of the parameters. If we have prior knowledge it allows us to create even better models. Furthermore, it takes more time to get the results of a Bayesian regression analysis. Estimating a Bayesian regression model is a computationally demanding task. It took 4 days on a regular computer to get the results of the Bayesian regression model with 1,525,871 articles (Example 1, Model B1). Still, eventually it worked and typical studies in comparative journalism research [e.g. 6,525 articles in @esser:2013:C] can be estimated within a reasonable time frame [^TIME]. 
 
 [^TIME]: We benchmarked the same model B1 but with subsets of data of some more "typical" sample sizes. A model with a large sample size of 30,000 can be estimated in less than 17 minutes on a typical 6-core computer. Although it is comparatively more computational intensive than *lme4*, the time needed is still reasonable.
 
