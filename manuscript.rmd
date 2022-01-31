@@ -35,7 +35,7 @@ tablelist         : no
 figsintext        : yes
 footnotelist      : no
 linenumbers       : no
-mask              : yes
+mask              : no
 draft             : no
 
 documentclass     : "apa6"
@@ -504,7 +504,89 @@ The regression coefficient for the year dummy variable is 0.49 (95\% HDI 0.38, 0
 
 # Example 2: The Worlds of Journalism study
 
-Example 1 above demonstrated how to conduct a Bayesian multilevel regression analysis. In this example, the same approach is applied to a stochastic dataset from a randomize survey. 
+Example 1 above demonstrated how to conduct a Bayesian multilevel regression analysis. In this example, the same approach is applied to a stochastic dataset from a randomize survey. The starting point of this example is the recent study by @hamada:2021:DJA. Using the second wave data from WJS (2012-2016), the study seeks to study this hypothesis (the H2a in the paper): *The greater the level of democracy in a country, the more perceived professional autonomy journalists enjoy*.
+
+It is important to point out that the study is actually a replication. The same hypothesis has been studied in an earlier study by @reich:2013:DJP, which uses the first wave data from WJS and has a remarkable similar title to that of @hamada:2021:DJA. The earlier study has studied this hypothesis (the H4): *Journalists’ perceived professional autonomy is positively associated with democratic performance and press freedom, and it is negatively related to political parallelism and state intervention.* The operationalizations of both professional autonomy (based on two questions in WJS) and level of democracy (based on the Economist Intelligence Unit's Index of Democracy) are the same in the two studies. 
+
+Interestingly, the analytical approaches are also similar in the two studies. The study by @reich:2013:DJP contains multiple regression models on how journalist-level characters predict perceived professional autonomy. However, for country-level predictors such as Index of Democracy, @reich:2013:DJP apply an aggregated approach due to "methodological considerations" of "includ[ing] substantive country-level predictors in an OLS regression" (p. 146). Effectively, the analysis boils down to aggregating the perceived professional autonomy of all journalists into mean values according to baskets of Index of Democracy and then comparing those mean values by ANOVA. The subsequent study by @hamada:2021:DJA applies the same aggregated approach by studying the bivariate correlation between the mean perceived professional autonomy of all journalists in a country and the Index of Democracy of a country.
+
+There are two weaknesses of the aggregated approach. First, a massive amount of information at the author-level was discarded and cannot leverage the hierarchical structure of the data. As showed in @reich:2013:DJP, author-level variables such as year of experience and being in a management position are also predictive of perceived professional autonomy. Taking the aggregated approach assumes that all of these author-level variables are homogeneous. This assumption could create spurious correlation when the distribution of author-level variables is associated with contextual factors, e.g. Index of Democracy. Second, the two hypotheses specified in the two quoted studies refer to the perception at the micro-level ("the more perceived professional autonomy journalists enjoy", "Journalists’ perceived professional autonomy"), not at the macro-level (e.g. the average level of perceived professional autonomy of journalists in a country). Interpreting the macro-level association wrongly at the micro-level leads to ecological fallacy.
+
+## Bayesian analysis of WJS
+
+Let's assume we were in the shoes of @hamada:2021:DJA and wanted to replicate the study by @reich:2013:DJP with the second wave WJS data. Bayesian multilevel regression is probably the only valid approach. First, it can take advantage of the hierarchical structure of the data and correctly estimate the contextual effect of democracy performance at the journalist-level perceived professional autonomy. Second, the incorporating of prior information from @reich:2013:DJP makes the intention to replication clearer.
+
+From the model 4 in @reich:2013:DJP, we know that the standardized beta coefficients for the variables rank and professional experience are .15 and .07 respectively. Unfortunately, the associated standard errors (or standard deviations) were not reported but only asterisks representing statistical significance (p < 0.001 for rank, p < 0.01 for professional experience). We estimated the maximum standard deviation based on the significance level. For example, the standard deviation of the standardized regression coefficient ($\sigma_{\beta'_{1}}$) of rank can be estimated by solving [^wald]:
+
+\begin{align}
+Pr(\frac{\beta'_{1}}{\sigma_{\beta'_{1}}}) &= \frac{0.001}{2} \sim \mathcal{N}(0, 1) \\
+\frac{\beta'_{1}}{\sigma_{\beta'_{1}}} &= 3.29 \\
+\frac{0.15}{\sigma_{\beta'_{1}}} &= 3.29 \\
+\sigma_{\beta'_{1}} &= 0.045
+\end{align}
+
+or in R
+
+```r
+beta_d_1 <- 0.15
+sig_level <- 0.001
+beta_d_1 / abs(qnorm(sig_level / 2))
+```
+
+The above information can be used as an informative prior of the current analysis. Unfortunately, the ANOVA result from @reich:2013:DJP cannot be used as the prior and we still need to use weakly informative prior. However, @reich:2013:DJP suggest that the relationship between Index of Democracy and perceived professional autonomy is in convex "J shape", with the average perceived professional autonomy of journalists in authoritarian regimes (the lowest end of democracy performance) being higher than those in hybrid regimes (3.92 vs 3.65). We can incorporate this prior information into our model by modeling a cubic relationship between Index of Democracy and perceived professional autonomy. Similar to the general procedure of conducting polynomial regression, we also create a parsimonious model assuming only a linear relationship to study whether the cubic regression improves the model fit. In other words, whether the relationship is really in convex "J shape" is studied [^jshape].
+
+```{r, echo = FALSE}
+pts_tab <- readRDS("pts_tab.RDS")
+```
+
+Another advantage of taking a Bayesian multilevel regression approach rather than the bivariate approach as in @reich:2013:DJP is the possibility to adjust for the possible confounding effects of other marco-level variables. For example, GDP per capita (according to World Bank) is moderately correlated with Index of Democracy (r = `r cor(pts_tab$eiu, pts_tab$gdppc, use = "complete")`). The correlation between Index of Democracy and perceived professional autonomy found by @reich:2013:DJP could be spurious and the GDP per capita were the actual determinant of perceived professional autonomy. We can adjust for the effect of GDP per capita by entering it also as an independent variable. The data can also provide such variance because there are countries with high GDP per capita but with low democracy (e.g. UAE and Qatar) and vice versa (e.g. Botswana and India).
+
+In order to make the result from this replication comparable to that of @reich:2013:DJP, we also calculate the standardized regression coefficients, i.e. all variables are mean-centered before entering into the regression model. 
+
+The following is the complete code to construct the two Bayesian model. The cubic relationship can be set using the `I()` function.
+
+```r
+require(tidyverse)
+
+informative_prior <- c(prior_string("normal(0, 1)", class = "b"),
+                       prior_string("normal(0, 1)", class = "Intercept"),
+                       prior_string("normal(0.14, 0.045)",
+                                    class = "b", coef = "EXPRNCE"),
+                       prior_string("normal(0.07, 0.027)",
+                                    class = "b", coef = "RANK"))
+
+std <- function(x){
+  (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE)
+}
+## eiu is Index of Democracy, gdppc is GDP per capita (log)
+set.seed(12121)
+wjs %>%
+    select(ppa, EXPRNCE, RANK, GENDER, UNI_EDU, UNI_EDU, eiu, gdppc, COUNTRY) %>%
+    mutate(gdppc = log(gdppc), COUNTRY = as.factor(COUNTRY)) %>%
+    mutate_at(vars(ppa:gdppc), std) -> wjs_processed
+brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNTRY),
+    data = wjs_processed, cores = 4, iter = 3000, prior = informative_prior,
+        sample_prior = TRUE) -> ppa_mod
+
+set.seed(12121)
+## iter needs to set larger to ensure convergence
+brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + I(eiu^3) + gdppc + (1|COUNTRY),
+    data = wjs_processed, cores = 4, iter = 4000, prior = informative_prior,
+    sample_prior = TRUE) -> ppa_qmod
+```
+
+By looking at the regression coefficient and the 95\% HDI, the standardized regression coefficient for Index of Democracy is 0.24 (95\% HDI: 0.13 to 0.34). It is not only statistical significant in the traditional sense but also the strongest predictor among all other predictors (Rank: 0.15, Experience: 0.08, gender: -0.06, university degree: -0.01). It supports @hamada:2021:DJA's h2a, but our model does that without the problem of aforementioned ecological fallacy and with adjustment for other potential confounders.
+
+Regarding the possible convex "J shape" relationship suggested by @reich:2013:DJP, we compare the model fit ($R^{2}$) of the cubic model and the parsimonious model and the cubic model provides no improvement in model fit over the parsimonious model (both: 0.194). By looking at the conditional effects plot (Figure \@ref(fig:fig5)), it also suggests that the relationship is not convex "J shape". Journalists in countries scored a lower Index of Democracy have also the lowest perceived professional autonomy. 
+
+```{r fig5, echo = FALSE, fig.cap = 'Conditional effects plot showing no convex "J shape" relationship between perceived professional autonomy and Index of Democracy.'}
+x <- readRDS("qmod_condit.RDS")
+x$`eiu` + xlab("Index of Democracy (mean-centered)") + ylab("Perceived professional autonomy (mean-centered)") + theme_minimal() + scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2")
+```
+
+[^wald]: Here we used the z-approximation of Wald test rather than the more typical t-distribution-based Wald test because the degree of freedom (df) is not reported. And t-distribution approximates z-distribution asymptotically when df gets larger.
+
+[^jshape]: Actually, the replication by @hamada:2021:DJA has shown that the relationship is not in such convex J shape. But we were assumed to be in the time point before such replication.
 
 # Conclusion
 
