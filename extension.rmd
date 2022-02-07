@@ -1,0 +1,182 @@
+---
+title             : "Appendix to \"Bayesian (comparative) journalism studies\""
+shorttitle        : "BAYESIAN MULTILEVEL REGRESSION"
+
+author: 
+  - name          : "Chung-hong Chan"
+    affiliation   : "1"
+    corresponding : yes
+    address       : "A5, 6 (section A), 68159 Mannheim, Germany"
+    email         : "chung-hong.chan@mzes.uni-mannheim.de"
+  - name          : "Adrian Rauschfleisch"
+    affiliation   : "2"    
+
+affiliation:
+  - id            : "1"
+    institution   : "Mannheimer Zentrum für Europäische Sozialforschung, Universität Mannheim, Germany"
+  - id            : "2"
+    institution   : "National Taiwan University, Taiwan"
+      
+keywords          : "Bayesian inference, multilevel model, comparative communication research, ecological effect"
+wordcount         : "7618"
+
+bibliography      : ["manuscript.bib"]
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+figsintext        : yes
+footnotelist      : no
+linenumbers       : no
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output:
+  papaja::apa6_pdf:
+    latex_engine: xelatex
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+require(brms)
+import_brms <- readRDS("import_brms.RDS")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+# Validation of the seed dictionaries
+
+One might argue our seed dictionaries are not validated. We deem that the criterion validity of our dictionary should be built-in. Coverage of China, by definition, should mention words about China. We also maintain that it is difficult to conduct a human validation of the seed dictionaries because the useNews dataset [@puschmann:2020] doesn’t provide access to the full-length articles. Nonetheless, we attempted to conduct such validation by randomly selecting 10 matching and 10 non-matching items for each language. In total, 160 items were selected. A coder with no knowledge of the ground truth (matching or not) annotated the full-text articles by following the URLs in the meta data provided in the useNews dataset [@puschmann:2020]. For some languages, the coder used Google Translate to translate the full text article to English. In total, only 138 URLs were still accessible. Comparing the ground truth and the human coding, 62 and 70 are true-positive and true-negative cases. There are also 5 false-negative and 1 false-positive cases. There are several reasons not related to our seed dictionaries that could lead to the 6 misclassified cases. The false-positive case is Korean and that could be due to incorrect tokenization at the MIT Media Cloud’s end. The 5 false-negative cases are in Norwegian, Portuguese, and Romanian. The content on the website might have changed since MIT Media Cloud collected the data. For example, the ever-changing content in the sidebar might be counted as “main content” and recorded in the DTM. Despite all these caveats, our seed dictionaries have a precision and recall of 98.4% and 92.5% respectively. For the purpose of demonstrating regression analysis, this level of accuracy is more than sufficient.
+
+# Extensions to Example 1
+
+## Extension #1: Hypothesis testing
+
+Under the Bayesian framework, we can test hypotheses about the parameter estimates [@shikano:2019:HTB]. These hypotheses are similar to the null hypothesis in the Neyman-Pearson's sense. For example, we want to test the two-sided hypothesis of $\gamma_{01} = 0$ for Model A1. For this, we need to calculate the posterior probability of this hypothesis: $P(\gamma_{01} = 0 | X)$. The function *hypothesis()* can be used to test such hypothesis.
+
+```r
+hypothesis(import_brms, "logx_import = 0")
+```
+
+The posterior probability of this hypothesis is 0. Therefore, we can safely reject the hypothesis and conclude that $\gamma_{01} \neq 0$, i.e. log import volume of the outlet's country is associated with the frequency of China coverage at the outlet level.
+
+While accepting a null hypothesis is not a feasible option in a frequentist framework, as such a framework has an "inability to gain evidence for the null" [@rouder:2009:B, p. 226] hypothesis, it is practically possible to  accept a null hypothesis in a Bayesian framework [@kruschke:2018:RAP]. Bayes factor or the region of practical equivalence (ROPE) could be used to decide to accept the null hypothesis. @kruschke:2018:RAP, for example, suggests using $\sigma = \pm 0.1$ as half of small effect size to establish a ROPE. However, there is no fixed rule on how to define a ROPE. If now 95\% of the HDI for an estimate falls within the ROPE, researchers could accept the null hypothesis for practical purposes. A practical application could be with manual content analysis or survey research in communication research if some variables are challenging and costly to measure. In a frequentist framework, failing to reject the null hypothesis could wrongly inform researchers to collect more data in subsequent studies to discern between insufficient power [^POWER] or the null is true. Instead, ROPE could be used to decide whether, in future studies, more data should be collected to retest the same hypothesis. When ROPE provides a strong signal that the null hypothesis is true, it is no longer worthy to collect more of the costly data just to boost the statistical power.
+
+[^POWER]: Statistical power is a frequentist concept specifying the long run probability of correctly rejecting the null hypothesis. It is usually not relevant for Bayesian inference.
+
+The package bayestestR [@makowski:2019] can be used to calculate and visualize the ROPE.
+
+```r
+library(bayestestR)
+rope(import_brms)
+plot(rope(import_brms))
+```
+
+```{r, include = FALSE}
+library(bayestestR)
+fig <- plot(rope(import_brms))
+```
+
+```{r figrope, results = "asis", fig.cap = "The Region of Practical Equivalence and the 95% High Density Interval"}
+fig
+```
+
+The proportion of 95\% HDI falling inside the ROPE is 0\%. Figure \@ref(fig:figrope) also displays that the 95\% HDI (the pink region) have no overlap with the ROPE (the shaded region). Using the decision rules by @kruschke:2018:RAP, there are 3 possible scenarios: reject the null (when most of the 95\% HDI falls outside the ROPE), accept the null (when most of the 95\% HDI falls inside the ROPE) and undecided (when it can’t be decided). In the current situation, it is very clear that the 95\% HDI falls outside of the ROPE as there is 0\% overlap. Similar to the result from *hypothesis()*, there is a practical effect and it is correct to reject the null hypothesis. 
+
+However, in another situation when we have a simulated independent variable *noise* that is basically random noise.
+
+```r
+outlet_data$noise <- rnorm(nrow(outlet_data))
+
+noise_brms <- brm(z~offset(log(n))+(1|k)+noise,
+                  data = outlet_data, family = negbinomial(),
+                  control = list(adapt_delta = 0.99),
+                  prior = weaklyinformative_prior,
+                  sample_prior = TRUE)
+rope(noise_brms)
+```
+
+In this situation, the proportion of 95\% HDI falls inside the ROPE is 68\%. The proportion is quite high but it is not decisive. @kruschke:2018:RAP suggests accepting the null when more than 95\% of the 95\% HDI falls inside the ROPE. Accordingly, the current situation of 68\% is "undecided". It might be worthwhile to retest the hypothesis with a larger amount of data.
+
+One should note that the decision rules by @kruschke:2018:RAP depend on many methodological decisions, e.g. how to determine the ROPE, how wide should the ROPE be, and which level of HDI to use. ROPE is also sensitive to the scale of measurement. Nonetheless, ROPE can provide much richer information to inform how future studies should be designed. 
+
+## Extension #2: Cross-level interaction
+
+We can also study the interaction between a macro- and a micro-level variable. Cross-level interaction is useful to study how the effect of context variables manifest differently in individuals with different characteristics. An example of cross-level interaction in our example is whether the relationship between import volume and increase in China coverage manifests differently between public broadcasters and for-profit media. 
+
+We can model a cross-level interaction by adding an interaction term between the macro- and micro-level variables, as well as a varying-slope component for the micro-level variable [@heisig:2019:WYS]. With *brms*, it can be done with this:
+
+```r
+# suppose "public" is a binary variable
+import_brms_public <- brm(
+      z~offset(log(n))+(1 + public|k)+log(x_import)*public,
+      data = outlet_data, family = negbinomial(),
+      prior = weaklyinformative_prior, sample_prior = TRUE)
+import_brms_public
+```
+
+The regression coefficients for the main effect of public broadcasting and the interaction terms have a wide 95\% HDI that covers zero. It can be visualized with a conditional effects plot (Figure \@ref(fig:fig4), using the *conditional_effects()* function). The trajectories of public broadcasters and for-profit media outlets are similar, indicating no interaction.
+
+```{r fig4, echo = FALSE, fig.cap = "Conditional effects plot showing no interaction among public broadcasting, import volume and China coverage."}
+require(ggplot2)
+condit_plots <- readRDS("condit_plots.RDS")
+condit_plots$`x_import:public` + xlab("Import Volume") + ylab("Number of articles mentioning China per 10,000 articles") + scale_x_continuous(labels = scales::comma) + theme_minimal() + scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2")
+```
+
+## Extension #3: Current study as the informative prior for the next study
+
+Suppose we would like to replicate the study and confirm the same relationship with the 2020 useNews data. This time, we do not need to (and actually, we should not) use the weakly informative prior again. It is because we have *prior* understanding about the outlet-level determinants of China coverage: We know from the 2019 data that $\gamma_{01}$ should be around 0.25 with a standard deviation of 0.05. This can be entered into our new analysis as the informative prior.
+
+```r
+informative_prior <- c(prior_string("normal(0.25, 0.05)", class = "b",
+                                    coef = "logx_import"),
+                       prior_string("normal(-6.69, 0.66)",
+                                    class = "Intercept"))
+import_2020 <- brm(z_2020~offset(log(n_2020))+(1|k)+log(x_import),
+                   data = outlet_data2020, family = negbinomial(),
+                   prior = informative_prior, sample_prior = TRUE)
+```
+
+The new analysis showed that $\gamma_{01}$ is 0.22 with a 95\% HDI of (0.15 to 0.29) for the year 2020. This analysis displays two things: 1) selection of prior is not always, as many authors have suggested, as controversial and subjective; and 2) Bayesian analysis also makes a strong case for replication studies, which open science hopes to enable [@dienlin:2020:AOS]. The use of informative prior in replication studies enables us to update our prior beliefs with the new evidence from the replications. Priors, replicable or not, will get updated.  
+
+## Extension #4: Temporal changes
+
+Bayesian multilevel regression analysis is also useful to study temporal changes, because observations from the same subject collected from different time points are naturally a cluster. The same strategy for handling the clustering of observations in the multilevel modeling can be used. We model that observations from the same media outlet are nested within the media outlet and then the media outlet is nested within its countries. Suppose we would like to study if there is a systematic increase in $z$ across all outlets, maybe due to the COVID-19 pandemic or the presidential election in the US. It can be analyzed with this three-level model.
+
+```r
+## Suppose yr is a binary dummy variable indicating the year 2020.
+import_long <- brm(z~offset(log(n))+(1|k/i)+yr, data = outlet_long,
+                   family = negbinomial(),
+                   prior = weaklyinformative_prior,
+                   sample_prior = TRUE)
+import_long
+```
+
+The regression coefficient for the year dummy variable is 0.49 (95\% HDI 0.38, 0.60). There is a global increase in China coverage from 2019 to 2020.
+
+# Leave-one-out cross validation of Example 2
+
+Another way to compare the cubic model and the parsimonious model is to conduct a leave-one-out cross validation (LOO). The basic idea of LOO is to study the out-of-sample accuracy of the model by removing one data point at a time. Given the rest of the data and the prediction model, we evaluate how accurate is the model to predict the outcome of the removed data point. The Bayesian LOO estimate of out-of-sample predictive fit ($elpd_{loo}$) can used to compare the out-of-sample accuracy of models [@vehtari:2016:PBW].
+
+In R, the LOO cross validation of the two models (parsimonious model: *ppa_mod*; cubic model *ppa_qmod*) can be launched with the function `loo`.
+
+```r
+loo(ppa_qmod, ppa_mod)
+```
+
+The difference in $elpd_{loo}$ between the cubic model and the parsimonious model is only -0.3 but with a standard error of 0.5. One would say there is a difference in out of sample model fit, when $elpa_{loo}$ is many times larger than its standard error.
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
