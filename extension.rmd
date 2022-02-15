@@ -18,7 +18,7 @@ affiliation:
     institution   : "National Taiwan University, Taiwan"
       
 keywords          : "Bayesian inference, multilevel model, comparative communication research, ecological effect"
-wordcount         : "7618"
+wordcount         : "1883"
 
 bibliography      : ["manuscript.bib"]
 
@@ -28,7 +28,7 @@ tablelist         : no
 figsintext        : yes
 footnotelist      : no
 linenumbers       : no
-mask              : no
+mask              : yes
 draft             : no
 
 documentclass     : "apa6"
