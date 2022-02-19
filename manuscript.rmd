@@ -18,7 +18,7 @@ affiliation:
     institution   : "National Taiwan University, Taiwan"
     
 authornote: |
-  The authors would like to thank professor Kasper Welbers (Vrije Universiteit Amsterdam) for his advice on the development of the Dutch dictionary; Dr Junior Yuner Zhu (City University of Hong Kong) for sharing details about her study.
+  The authors would like to thank professor Kasper Welbers (Vrije Universiteit Amsterdam) for his advice on the development of the Dutch dictionary; Dr Junior Yuner Zhu (City University of Hong Kong) for sharing details about her study.  The authors report there are no competing interests to declare.
   Source code and data are available at (redacted). Prereg: https://osf.io/2h4w8/
 
 abstract: |
