@@ -191,7 +191,7 @@ In the article-level analysis, the data has 1,525,871 rows and each row represen
 
 A dictionary-based approach was used. The seed English and German dictionaries from the R package newsmap [@watanabe:2017:N] were used as the basis. The seed dictionaries contain words about Chinese, China, Beijing and Shanghai. We developed further the Spanish, Romanian, Korean, Portuguese, Norwegian, and Dutch dictionaries [^dict_val]. The dictionaries were applied to the 61 document-term matrices (format of the provided dataset) of all included media outlets. An article is classified as China coverage when at least one dictionary match is detected.
 
-[^dict_val]: The validation of the dictionary is available in the Appendix.
+[^dict_val]: The validation of the dictionary is available in the online appendix.
 
 <!-- ```{r, echo = FALSE} -->
 <!-- Language <- c("English", "German", "Spanish", "Romanian", "Korean", "Portugese", "Norwegian", "Dutch") -->
@@ -394,7 +394,7 @@ pp_check(import_brms, ndraws = 100)
 
 ## Extensions
 
-We propose four extensions to the above barebone analysis: hypothesis testing, investigating cross-level interaction, establishing informative prior, and testing for temporal changes. The analyses in these extensions are not preregistered. Please refer to Appendix I for these extensions.
+We propose four extensions to the above barebone analysis: hypothesis testing, investigating cross-level interaction, establishing informative prior, and testing for temporal changes. The analyses in these extensions are not preregistered. Please refer to the online appendix for these extensions.
 
 # Example 2: The Worlds of Journalism study
 
@@ -483,7 +483,7 @@ x$`eiu` + xlab("Index of Democracy (mean-centered)") + ylab("Perceived professio
 
 [^jshape]: Actually, the replication by @hamada:2021:DJA has shown that the relationship is not in such J shape. But we were assumed to be in the time point before such replication.
 
-[^loo]: Another way to evaluate the model fit is to use leave-one-out cross validation. See Appendix for the analysis.
+[^loo]: Another way to evaluate the model fit is to use leave-one-out cross validation. See the online appendix for the analysis.
 
 # Conclusion
 
