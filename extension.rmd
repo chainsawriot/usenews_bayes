@@ -2,20 +2,20 @@
 title             : "Online appendix to \"Bayesian (comparative) journalism studies\""
 shorttitle        : "BAYESIAN MULTILEVEL REGRESSION"
 
-author: 
-  - name          : "Chung-hong Chan"
-    affiliation   : "1"
-    corresponding : yes
-    address       : "A5, 6 (section A), 68159 Mannheim, Germany"
-    email         : "chung-hong.chan@mzes.uni-mannheim.de"
-  - name          : "Adrian Rauschfleisch"
-    affiliation   : "2"    
+# author: 
+#   - name          : "Chung-hong Chan"
+#     affiliation   : "1"
+#     corresponding : yes
+#     address       : "A5, 6 (section A), 68159 Mannheim, Germany"
+#     email         : "chung-hong.chan@mzes.uni-mannheim.de"
+#   - name          : "Adrian Rauschfleisch"
+#     affiliation   : "2"    
 
-affiliation:
-  - id            : "1"
-    institution   : "Mannheimer Zentrum für Europäische Sozialforschung, Universität Mannheim, Germany"
-  - id            : "2"
-    institution   : "National Taiwan University, Taiwan"
+# affiliation:
+#   - id            : "1"
+#     institution   : "Mannheimer Zentrum für Europäische Sozialforschung, Universität Mannheim, Germany"
+#   - id            : "2"
+#     institution   : "National Taiwan University, Taiwan"
       
 keywords          : "Bayesian inference, multilevel model, comparative communication research, ecological effect"
 wordcount         : "1883"
@@ -49,6 +49,99 @@ import_brms <- readRDS("import_brms.RDS")
 set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
+
+# Source Code
+
+All source will be available on the author(s)' Github upon acceptance. The following are key code chunks used in the paper.
+
+## Expression of outlet-level models in lme4 and brms
+
+```r
+require(brms)
+require(lme4)
+# brms
+brm(z ~ offset(log(n)) + (1|k)+log(x),
+          family = negbinomial(), data = outlet_data)
+# lme4
+glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
+```
+
+## Expression of disaggregated out-level model in MASS
+
+```r
+require(MASS)
+glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
+```
+
+## Expression of article-level models in lme4 and brms
+
+```r
+brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
+glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
+```
+
+## Expression of disaggregated article-level model in MASS
+
+```r
+glm(y ~ log(x), family = binomial(), data = article_data)
+```
+
+## Setting up weakly informative prior in the brms model
+
+```r
+weaklyinformative_prior <- c(prior_string("normal(0, 1)",
+                                          class = "b"),
+                             prior_string("normal(0, 1)",
+                                          class = "Intercept"))
+# The sample_prior argument is optional. But useful for further analysis.
+import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import),
+          data = outlet_data, family = negbinomial(),
+          prior = weaklyinformative_prior, sample_prior = TRUE)
+import_brms
+```
+
+## WJS: Estimation of prior
+
+```r
+beta_d_1 <- 0.15
+sig_level <- 0.001
+beta_d_1 / abs(qnorm(sig_level / 2))
+```
+
+## WJS: Full code
+
+The cubic relationship can be set using the `I()` function.
+
+```r
+require(tidyverse)
+
+informative_prior <- c(prior_string("normal(0, 1)", class = "b"),
+                       prior_string("normal(0, 1)", class = "Intercept"),
+                       prior_string("normal(0.14, 0.045)",
+                                    class = "b", coef = "EXPRNCE"),
+                       prior_string("normal(0.07, 0.027)",
+                                    class = "b", coef = "RANK"))
+
+std <- function(x){
+  (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE)
+}
+## eiu is Index of Democracy, gdppc is GDP per capita (log)
+set.seed(12121)
+wjs %>%
+    select(ppa, EXPRNCE, RANK, GENDER, UNI_EDU, UNI_EDU, eiu, gdppc, COUNTRY) %>%
+    mutate(gdppc = log(gdppc), COUNTRY = as.factor(COUNTRY)) %>%
+    mutate_at(vars(ppa:gdppc), std) -> wjs_processed
+brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNTRY),
+    data = wjs_processed, cores = 4, iter = 3000, prior = informative_prior,
+        sample_prior = TRUE) -> ppa_mod
+
+set.seed(12121)
+## iter needs to set larger to ensure convergence
+brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + I(eiu^3) + gdppc + (1|COUNTRY),
+    data = wjs_processed, cores = 4, iter = 4000, prior = informative_prior,
+    sample_prior = TRUE) -> ppa_qmod
+```
+
 
 # Validation of the seed dictionaries
 

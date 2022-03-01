@@ -41,8 +41,8 @@ draft             : no
 documentclass     : "apa6"
 classoption       : "man"
 output:
-  papaja::apa6_pdf:
-    latex_engine: xelatex
+ papaja::apa6_pdf:
+   latex_engine: xelatex
 ---
 
 ```{r setup, include = FALSE}
@@ -55,15 +55,13 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-*"The comparative approach attempts to reach conclusions beyond single cases and explains differences and similarities between objects of analysis against the backdrop of their contextual conditions."* @esser:2017:CRM
+<!-- *"The comparative approach attempts to reach conclusions beyond single cases and explains differences and similarities between objects of analysis against the backdrop of their contextual conditions."* @esser:2017:CRM -->
 
 Communication research is often comparative, journalism studies are increasingly so [@hanusch:2019:C]. Comparative approach is used in modeling journalistic culture [e.g. @esser:2013:C], comparative news value research [e.g. @burggraaff:2017:T;@wilke:2012], news flow research [e.g. @wu:2000:SDI;@grasland:2019:I], among others. Around 40% of recent  comparative studies in journalism research are comparative content analysis [@hanusch:2019:C], which include news articles from various outlets and usually also from various countries. Then the included news articles are coded either manually or automatically. Another 10% of recent comparative studies in journalism research are surveys such as the Worlds of Journalism Study (WJS) [@hanusch:2017:CJC].
 
 Although some comparative studies are purely descriptive, most of these studies are aimed to study how contextual conditions such as characteristics of media outlets (e.g. political orientation, online versus offline) or their countries (e.g. post-communist country) influence the content of news articles or behaviors of journalists. For example, some hypotheses are "the coverage of foreign countries by the news is primarily determined by geographical proximity and the status of the covered country" [@wilke:2012, p.306] and "the  degree of opinion-orientation will be highest in newspapers from Polarized Mediterranean systems and lowest in those from Anglo-American systems." [@esser:2013:C] Employing the language from epidemiology [@susser:1994], the effect on media content and journalistic behaviors in these hypotheses is assumed to be ecological. It assumes a macro contextual factor (e.g., newspapers from Polarized Mediterranean systems) is associated with an outcome at the micro-level (e.g., degree of opinion-orientation), namely, the article-level or journalist-level.
 
-This study of ecological effects on individual behaviors has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found a higher suicide rate among citizens from Scandinavian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative research. An example of hypothesis-generating comparative research is @chan2020combining, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative study, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative research introduces a feature that researchers usually overlook: media contents are clustered in a multilevel structure. A news article is nested within its media outlet and its media outlet is in turn nested within its country [^author]. Such data structure brings two problems: non-atomicity and non-stochasticity.
-
-[^author]: Theoretically, with large enough data it can be argued that a news article is nested within authors.
+This study of ecological effects on individual behaviors has a long tradition in social sciences. A famous example was Émile Durkheim's investigation on the ecological factors associated with suicide [@durkheim1897suicide]. Durkheim found a higher suicide rate among citizens from Scandinavian countries than those from other European countries. Using today’s standard, Durkheim's analysis is descriptive and this descriptive approach for studying ecological effect is indeed still useful for hypothesis generation in comparative research. An example of hypothesis-generating comparative research is <!-- redacted for ijoc  -->AUTHOR1 <!-- @chan2020combining -->, in which the sentiment profiles of terrorism coverage from Muslim- and Christian-majority countries were visualized. Hypothesis-generating comparative study, however, is rare. Most studies have a confirmatory outlook. As we see from the example hypotheses above, most of these studies propose hypotheses to test for ecological effects. In this context usually traditional (frequentist) hypothesis testing approaches were used: @esser:2013:C lumped multiple outlets from the same country together and then used univariate analysis of variance to test for the differences in the proportion of opinion-orienting articles across countries. In @wu:2000:SDI, multiple stepwise regression was used. These approaches violate the underlying assumptions of the statistical analyses. It highlights the fact that comparative research introduces a feature that researchers usually overlook: media contents are clustered in a multilevel structure. A news article is nested within its media outlet and its media outlet is in turn nested within its country. Such data structure brings two problems: non-atomicity and non-stochasticity.
 
 In our paper, we first discuss these two issues before we suggest Bayesian multilevel regression as a standard approach for comparative research in journalism studies. While Bayesian models might be slightly more complicated to estimate in contrast to frequentist models as priors have to be chosen, these models allow researchers to make "principled statements about precision and plausibility" [@morey:2015 p. 121] and solve the issue of misinterpreted confidence intervals [@hoekstra:2014:R;@rinke:2018:PMA]. Using the openly available *useNews* and WJS datasets and the R package *brms*, we then demonstrate how to apply a Bayesian approach for the analysis of comparative data.
 
@@ -79,13 +77,13 @@ In comparative research, it is easy to incorrectly assume that macro-level indep
   y_{i} = \beta_{0} + \beta_{1} x_{i} + \epsilon_{i}
 \end{align}
 
-This method is the so-called "disaggregation approach". From an epistemic standpoint, searching for ecological effect by studying the value of slope ($\beta_{1}$) leads to atomistic fallacy [@hox2017multilevel]. From a statistical standpoint, this approach violates the underlying independence assumption. Almost all frequentist statistical tests assume that the observations are independent of each other: $y_{i}$ given $x_{i}$ are independently identically distributed (i.i.d.). Articles from the same media outlet are hardly i.i.d.: they are subjected to being edited by the same editorial team, to being written by the same group of journalists exposed to the same journalistic culture and paid for by the same employer. Also, the way communication researchers collect their media content resembles cluster sampling rather than random sampling: one usually starts from a specific media outlet and then collects all relevant articles from it. The choice of media outlets or countries is almost always not randomly selected. [^1] This sampling approach makes the independence assumption even more fragile.
+This method is the so-called "disaggregation approach". From an epistemic standpoint, searching for ecological effect by studying the value of slope ($\beta_{1}$) leads to atomistic fallacy [@hox2017multilevel]. From a statistical standpoint, this approach violates the underlying independence assumption. Almost all frequentist statistical tests assume that the observations are independent of each other: $y_{i}$ given $x_{i}$ are independently identically distributed (i.i.d.). Articles from the same media outlet are hardly i.i.d.: they are subjected to being edited by the same editorial team, to being written by the same group of journalists exposed to the same journalistic culture and paid for by the same employer. Also, the way communication researchers collect their media content resembles cluster sampling rather than random sampling: one usually starts from a specific media outlet and then collects all relevant articles from it. The choice of media outlets or countries is almost always not randomly selected. <!-- [^1] --> This sampling approach makes the independence assumption even more fragile.
 
-[^1]: If countries were randomly selected, we shall see more African countries in comparative works. It is because 1/4, or 54 out of 195, UN countries are in Africa.
+<!-- [^1]: If countries were randomly selected, we shall see more African countries in comparative works. It is because 1/4, or 54 out of 195, UN countries are in Africa. -->
 
-Previous simulation studies have shown that ignoring this dependence can lead to false-positive associations [e.g. @clarke:2008:W;@chen:2012:IIL]. The problem is more severe when the dependent variable is a discrete binary variable [@clarke:2008:W], a common feature of content analysis. [^2]
+Previous simulation studies have shown that ignoring this dependence can lead to false-positive associations [e.g. @clarke:2008:W;@chen:2012:IIL]. The problem is more severe when the dependent variable is a discrete binary variable [@clarke:2008:W], a common feature of content analysis. <!-- [^2] -->
 
-[^2]: The non-atomicity argument has been in standard statistics textbooks for 40+ years and it might look repetitious. We believe it is still necessary, not least because multilevel modeling --unlike what @mcelreath2020statistical [p. 356] said-- is still not the default regression approach in communication research for hierarchical data and there are many justifications for using the disaggregation approach, e.g. an example in @zhu:2020:S [footnote 5]. Even a multilevel modeling textbook advocates these justifications [@bickel2007multilevel]. See also @nezlek:2008:IMM for a criticism of these justifications. 
+<!-- [^2]: The non-atomicity argument has been in standard statistics textbooks for 40+ years and it might look repetitious. We believe it is still necessary, not least because multilevel modeling --unlike what @mcelreath2020statistical [p. 356] said-- is still not the default regression approach in communication research for hierarchical data and there are many justifications for using the disaggregation approach, e.g. an example in @zhu:2020:S [footnote 5]. <\!-- Even a multilevel modeling textbook advocates these justifications [@bickel2007multilevel]. -\-> See also @nezlek:2008:IMM for a criticism of these justifications.  -->
 
 There are two solutions to this. The first solution is to aggregate the micro-level dependent variable across a macro-level independent variable. Suppose there are $n$ countries in the above example. One can aggregate the total number of articles covering China as $z_{k}$ for the $k$-th country, where $k=i,\ldots,n$. Then, we can do a count-based regression with a regression equation like so:
 
@@ -135,9 +133,7 @@ Before we move on to the next section, it is important to point out that **non-s
 
 ## Bayesian analysis
 
-*"PROBABILITY DOES NOT EXIST."* Bruno de Finetti
-
-What is the probability for this paper being accepted by *Journalism Studies*? Under the frequentist framework (and if *Journalism Studies* were accepting papers stochastically), we can only find this out by repeatedly submitting this paper to *Journalism Studies*, say for 100 times, and then count the frequency of acceptance in these repeated submissions. It is indeed impractical as well as inhumane to the editorial team of *Journalism Studies*. Instead, we assert before submission that this paper has a probability of 24% for being accepted. That is the published acceptance rate from *Journalism Studies*’s website. After this paper is submitted and is not desk rejected, the probability might be around 24% to 30%. After a month of waiting and our confidence is shaken a little, the probability might decrease to 10% to 20%. After the paper is favorably reviewed by two reviewers and an R&R is invited, the probability might increase to 40% to 60%. If you see this paper under the "Latest articles" section of *Journalism Studies*'s website, then the probability is beyond doubt 100% (or 0% if we submit this paper again).
+What is the probability for this paper being accepted by *IJOC*? Under the frequentist framework (and if *IJOC* were accepting papers stochastically), we can only find this out by repeatedly submitting this paper to *IJOC*, say for 100 times, and then count the frequency of acceptance in these repeated submissions. It is indeed impractical as well as inhumane to the editorial team of *IJOC*. Instead, we assert before submission that this paper has a probability of 24% for being accepted. That is the published acceptance rate of a similar journal. After this paper is submitted and is not desk rejected, the probability might be around 24% to 30%. After a month of waiting and our confidence is shaken a little, the probability might decrease to 10% to 20%. After the paper is favorably reviewed by two reviewers and an R&R is invited, the probability might increase to 40% to 60%. If you see this paper on *IJOC*'s website, then the probability is beyond doubt 100% (or 0% if we submit this paper again).
 
 Without repeated experiment, these probabilities quantify our certainty on how likely this paper is being accepted, given the current available data . We revise our old beliefs (or **prior**, $p(\theta)$) with the new data ($X$) and form our revised belief (or **posterior**, $p(\theta|X)$). This can be summarized in the following equation [@gelman2020bayesian]:
 
@@ -157,15 +153,15 @@ For the other six sevenths, one might not have any information to set an informa
 
 But one person's expert opinion could be another person's wishful thinking. And this perceived subjectivity of specifying priors by experts’ judgment attracts wide-spread criticism from both statisticians [e.g. @efron1986isn] and social scientists [@elff:2020:MAF;@bryan:2015:MMC].
 
-Undoubtedly, setting prior is consequential to the analysis [@van:2006:PB]. But the influence from priors is greatly weakened, when the data is getting bigger. Other than expert elicitation, another non-controversial way to specify priors --- at least in our opinion --- is to use  a weakly informative prior [@lemoine:2019:M]. In this way, one specifies only the possible range of the posterior [^4]. Some so-called "default weakly informative priors", e.g. $\mathcal{t}(1, 0, 0.25)$, have been suggested for typical regression models [@gelman:2008]. The documentation of Stan also provides information on how to choose an appropriate prior (https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations). 
+Undoubtedly, setting prior is consequential to the analysis [@van:2006:PB]. But the influence from priors is greatly weakened, when the data is getting bigger. Other than expert elicitation, another non-controversial way to specify priors --- at least in our opinion --- is to use  a weakly informative prior [@lemoine:2019:M]. In this way, one specifies only the possible range of the posterior<!-- [^4] -->. Some so-called "default weakly informative priors", e.g. $\mathcal{t}(1, 0, 0.25)$, have been suggested for typical regression models [@gelman:2008]. The documentation of Stan also provides information on how to choose an appropriate prior (https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations). 
 
-[^4]: One could also use a completely *noninformative* prior such as $\mathcal{U}(-\infty, \infty)$. It is, however, no longer advised.
+<!-- [^4]: One could also use a completely *noninformative* prior such as $\mathcal{U}(-\infty, \infty)$. It is, however, no longer advised. -->
 
 ## Bayesian communication research
 
-*"There is a general challenge to a prescription of more widespread use of Bayesian methods for multilevel modeling, and that is that such methods require statistical expertise beyond that of most applied social science researchers, as well as specialist software (or software with which such researchers are unfamiliar)."* @bryan:2015:MMC [p. 19]
+<!-- *"There is a general challenge to a prescription of more widespread use of Bayesian methods for multilevel modeling, and that is that such methods require statistical expertise beyond that of most applied social science researchers, as well as specialist software (or software with which such researchers are unfamiliar)."* @bryan:2015:MMC [p. 19] -->
 
-Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method [e.g. @kovic:2017:B;@chan2020high], these studies are not comparative. As far as we know, the only available comparative research in journalism studies that Bayesian multilevel regression was used for studying ecological effect are @leeuw:2020:AAT and @heidenreich:2022:DE. We believe comparative communication research fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], the main purpose of the rest of this paper is to demonstrate how to actually do the analysis using the R package *brms* [@burkner2017advanced]. As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. The above-quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modeling is no longer an issue. 
+Bayesian analysis is still a minority statistical method in social sciences. It is reasonable to say that Bayesian analysis is extremely rare in our field. Although some communication researchers adopted the method (e.g. AUTHOR2, AUTHOR3) <!-- [e.g. @kovic:2017:B;@chan2020high] -->, these studies are not comparative. As far as we know, the only available comparative research in journalism studies that Bayesian multilevel regression was used for studying ecological effect are @leeuw:2020:AAT and @heidenreich:2022:DE. We believe comparative communication research fits the use case of Bayesian multilevel regression analysis. Although there is another methodological introduction to Bayesian analysis aiming at communication researchers [@konijn:2015:PSP], one purpose of this paper is to demonstrate how to actually do the analysis using the R package *brms* [@burkner2017advanced] (see the source code in the Online Appendix https://osf.io/2h4w8/?view_only=be14dc637b8e4fd1a26ac5c64682b6d9 ). As the interface of *brms* is almost the same as *lme4* [@bates:2015:FLM, another R package for fitting multilevel models using MLE], *lme4* users might find *brms* extremely familiar. <!-- The above-quoted challenge about the prescription of more widespread use of Bayesian methods for multilevel modeling is no longer an issue.  -->
 
 The two examples below show how the Bayesian multilevel regression analysis can be deployed to the common archetypes of comparative journalism studies. The first example is an analysis of a comparative, non-stochastic content analytic dataset. The second example is an analysis of a comparative, stochastic survey dataset.
 
@@ -179,7 +175,7 @@ For demonstrative purposes, our analysis was separated into two levels: outlet-l
 
 The useNews is an openly available dataset [@puschmann:2020] that includes 2019 to 2020 media content data from an array of worldwide media outlets. The media content data was collected from the MediaCloud and made available as document-term matrices.
 
-We used only the data from 2019 as the baseline. It is important to note that the Hong Kong protests, the 30th anniversary of the Tiananmen Square Protests and the 70th anniversary of the communist regime were in that year. Also, it was at the zenith of the US-China trade war. 
+We used only the data from 2019 as the baseline. <!-- It is important to note that the Hong Kong protests, the 30th anniversary of the Tiananmen Square Protests and the 70th anniversary of the communist regime were in that year. Also, it was at the zenith of the US-China trade war.  -->
 
 We excluded media outlets that contributed <1,000 articles in that year. This threshold allowed us to retain media outlets that the frequency of China coverage can be reliably estimated. In total, 61 media outlets from Spain (n = 11), Romania (n = 11), US (n = 7), Austria (n = 6), Germany (n = 5), Norway (n = 5), Australia (n  = 4), Brazil (n = 4), UK (n = 4), South Korea (n = 2), and the Netherlands (n = 2) were included. These 61 media outlets contributed 1,525,871 articles.
 
@@ -219,30 +215,11 @@ We used negative binomial regression for this analysis. Media outlets are nested
 
 The estimand of interest, $\gamma_{01}$, is interpreted as the average unit change in the log rate of China coverage, $\log\frac{z_{jk}}{n_{j}}$, for each unit change in the distance measure of the outlet $k$.  
 
-In lme4 and brms, the above equation is expressed as such:
-
-```r
-require(brms)
-require(lme4)
-# brms
-brm(z ~ offset(log(n)) + (1|k)+log(x),
-          family = negbinomial(), data = outlet_data)
-# lme4
-glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
-```
-
 In the disaggregation case, the multilevel structure is ignored and the regression equation becomes:
 
 \begin{align}
 \log\frac{z_{jk}}{n_{j}} &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{j}
 \end{align}
-
-In MASS, it is expressed as such:
-
-```r
-require(MASS)
-glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
-```
 
 We named the models with different independent variables as model A1-4 respectively (A1: log import volume; A2: log export volume; A3: log physical distance; A4: log cultural distance).
 
@@ -260,13 +237,6 @@ L_{ijk} &= \pi_{0} + \epsilon_{ijk} \\
 \beta_{00} &= \gamma_{000} + \mu_{00k} + \gamma_{001} x_{k}
 \end{align}
 
-Or in lme4/brms code:
-
-```r
-brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
-glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
-```
-
 In the disaggregation case, the multilevel structure is ignored and the regression equations become:
 
 \begin{align}
@@ -274,12 +244,6 @@ p_{ijk} &= Pr(y_{ijk} = 1) \\
 L_{ijk} &= \log{\frac{p_{ijk}}{1 - p_{ijk}}} \\
 L_{ijk} &= \beta_{0} + \beta_{1} x_{k} + \epsilon_{ijk}
 \end{align}
-
-In MASS, it is expressed as such:
-
-```r
-glm(y ~ log(x), family = binomial(), data = article_data)
-```
 
 We named this model as model B1.
 
@@ -293,19 +257,7 @@ In this analysis, we used weakly informative priors suggested by @lemoine:2019:M
 
 For regression coefficients, e.g. $\gamma_{00}$, we used a normal distribution of $\mathcal{N}(0, 1)$. For variance terms, e.g. $\mu_{0k}$, a student t-distribution of $\mathcal{t}(3, 0, 2.5)$ was used. A gamma distribution of $\mathcal{Gamma}(0.01, 0.01)$ was used for the shape parameter $\phi$.
 
-All, except the prior for regression coefficients, are default priors suggested by *brms*. The prior can be set with the following R code.
-
-```r
-weaklyinformative_prior <- c(prior_string("normal(0, 1)",
-                                          class = "b"),
-                             prior_string("normal(0, 1)",
-                                          class = "Intercept"))
-# The sample_prior argument is optional. But useful for further analysis.
-import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import),
-          data = outlet_data, family = negbinomial(),
-          prior = weaklyinformative_prior, sample_prior = TRUE)
-import_brms
-```
+All, except the prior for regression coefficients, are default priors suggested by *brms*. 
 
 ### Other parameters
 
@@ -315,7 +267,7 @@ Other parameters for Bayesian multilevel regression analysis control how the MCM
 
 Table \@ref(tab:t1) shows a summary of all models from the outlet-level analysis using three different ways of modeling. The Bayesian multilevel regression gave the *posterior distribution*, $P(\theta | X)$, of the regression coefficient ($\gamma_{001}$). It is a distribution and therefore we need ways to display both the central tendency and spread of the distribution. By default, *brms* displays the mean and the 95\% high density interval (HDI). [^5] These two values represent the point and interval estimates of the regression coefficient.
 
-[^5]: HDI is one representation of the Bayesian credible interval. There should be no "correct" choice of the level of credibility but some established conventions. We choose, like many published works [e.g. @stegmueller:2013:HMC; @kovic:2017:B; @chan2020high], the default value of 95\%. However, there is a general concern about this credibility level as being unstable for Bayesian analysis [@kruschke2014doing]. Some Bayesians, notably Andrew Gelman, report very liberal 50\% credible intervals. @mcelreath2020statistical selects 89\% to show the arbitrariness of the practice. @leeuw:2020:AAT select 90\%.
+[^5]: HDI is one representation of the Bayesian credible interval. There should be no "correct" choice of the level of credibility but some established conventions. We choose, like many published works [e.g. @stegmueller:2013:HMC<!-- ; @kovic:2017:B; @chan2020high -->], the default value of 95\%. However, there is a general concern about this credibility level as being unstable for Bayesian analysis [@kruschke2014doing]. <!-- Some Bayesians, notably Andrew Gelman, report very liberal 50\% credible intervals. @mcelreath2020statistical selects 89\% to show the arbitrariness of the practice. @leeuw:2020:AAT select 90\%. -->
 
 Consistently, point estimates are remarkably similar. Bayesian multilevel regression gave a wider 95% HDI than confidence intervals from frequentist methods. It is similar to previous studies [@stegmueller:2013:HMC; @elff:2020:MAF]. The results indicate that only a higher export or import volume with China and the host country of the media outlet is associated with more reporting of China. While the frequentist confidence intervals and the Bayesian credible interval seem to be similar, they are from a philosophical point of view totally different and lead to different forms of inference. The Bayesian approach allows us to say that *given the observed data, the true estimate of log import volume has 95% probability of falling within  0.18 and 0.33*. In contrast, the frequentist confidence interval only allows us to say that *when computing a confidence interval from the same type of data in repeated studies (if possible), 95% of the confidence intervals will include the true estimate of log import volume*. One of the misconceptions of frequentist confidence intervals is that they can be interpreted in a Bayesian way as described above [@morey:2015]. This example illustrates that a Bayesian approach allows us to interpret the results in a more intuitive way.
 
@@ -372,13 +324,13 @@ mcmc_plot(import_brms, type = "acf")
 
 ### Further diagnostics
 
-There are several diagnostic checks that we can do to make sure our model is valid.
+There are <!-- several --> two diagnostic checks that we can do to make sure our model is valid.
 
-* Increasing number of iterations
+<!-- * Increasing number of iterations -->
 
-The first test is to increase the number of iterations from 2000 to a higher value, e.g. 4000, and see if the result is consistent with the initial analysis. This check makes sure our result is not transient due to short iteration time.
+<!-- The first test is to increase the number of iterations from 2000 to a higher value, e.g. 4000, and see if the result is consistent with the initial analysis. This check makes sure our result is not transient due to short iteration time. -->
 
-Increasing the number of iterations did change a bit of the estimates, but only at the second decimal place. It shows that the results are consistent between the two analyses.
+<!-- Increasing the number of iterations did change a bit of the estimates, but only at the second decimal place. It shows that the results are consistent between the two analyses. -->
 
 * Using another weakly informative prior
 
@@ -410,7 +362,7 @@ There are two weaknesses of the aggregated approach. First, a massive amount of 
 
 Let's assume we were in the shoes of @hamada:2021:DJA and wanted to replicate the study by @reich:2013:DJP with the second wave WJS data. Bayesian multilevel regression is probably the only valid approach. First, it can take advantage of the hierarchical structure of the data and correctly estimate the contextual effect of democracy performance on the journalist-level perceived professional autonomy. Second, the incorporating of prior information from @reich:2013:DJP makes the intention to replicate clearer.
 
-From the model 4 in @reich:2013:DJP, we know that the standardized beta coefficients for the variables rank and professional experience are .15 and .07 respectively. Unfortunately, the associated standard errors (or standard deviations) were not reported but only asterisks representing statistical significance (p < 0.001 for rank, p < 0.01 for professional experience). We estimated the maximum standard deviation based on the significance level. For example, the standard deviation of the standardized regression coefficient ($\sigma_{\beta'_{1}}$) of rank can be estimated by solving [^wald]:
+From the model 4 in @reich:2013:DJP, we know that the standardized beta coefficients for the variables rank and professional experience are .15 and .07 respectively. Unfortunately, the associated standard errors (or standard deviations) were not reported but only asterisks representing statistical significance (p < 0.001 for rank, p < 0.01 for professional experience). We estimated the maximum standard deviation based on the significance level. For example, the standard deviation of the standardized regression coefficient ($\sigma_{\beta'_{1}}$) of rank can be estimated by solving <!-- [^wald] -->:
 
 \begin{align}
 Pr(\frac{\beta'_{1}}{\sigma_{\beta'_{1}}}) &= \frac{0.001}{2} \sim \mathcal{N}(0, 1) \\
@@ -418,14 +370,6 @@ Pr(\frac{\beta'_{1}}{\sigma_{\beta'_{1}}}) &= \frac{0.001}{2} \sim \mathcal{N}(0
 \frac{0.15}{\sigma_{\beta'_{1}}} &= 3.29 \\
 \sigma_{\beta'_{1}} &= 0.045
 \end{align}
-
-or in R
-
-```r
-beta_d_1 <- 0.15
-sig_level <- 0.001
-beta_d_1 / abs(qnorm(sig_level / 2))
-```
 
 The above information can be used as an informative prior of the current analysis. Unfortunately, the ANOVA result from @reich:2013:DJP cannot be used as the prior and we still need to use weakly informative prior. However, @reich:2013:DJP suggest that the relationship between Index of Democracy and perceived professional autonomy is in "J shape", with the average perceived professional autonomy of journalists in authoritarian regimes (the lowest end of democracy performance) being higher than those in hybrid regimes (3.92 vs 3.65). We can incorporate this prior information into our model by modeling a cubic relationship between Index of Democracy and perceived professional autonomy. Similar to the general procedure of conducting polynomial regression, we also create a parsimonious model assuming only a linear relationship to study whether the cubic regression improves the model fit. In other words, whether the relationship is really in "J shape" is studied [^jshape].
 
@@ -437,38 +381,6 @@ Another advantage of taking a Bayesian multilevel regression approach rather tha
 
 In order to make the result from this replication comparable to that of @reich:2013:DJP, we also calculate the standardized regression coefficients, i.e. all variables are mean-centered before entering into the regression model. 
 
-The following is the complete code to construct the two Bayesian models. The cubic relationship can be set using the `I()` function.
-
-```r
-require(tidyverse)
-
-informative_prior <- c(prior_string("normal(0, 1)", class = "b"),
-                       prior_string("normal(0, 1)", class = "Intercept"),
-                       prior_string("normal(0.14, 0.045)",
-                                    class = "b", coef = "EXPRNCE"),
-                       prior_string("normal(0.07, 0.027)",
-                                    class = "b", coef = "RANK"))
-
-std <- function(x){
-  (x - mean(x, na.rm = TRUE))/sd(x, na.rm = TRUE)
-}
-## eiu is Index of Democracy, gdppc is GDP per capita (log)
-set.seed(12121)
-wjs %>%
-    select(ppa, EXPRNCE, RANK, GENDER, UNI_EDU, UNI_EDU, eiu, gdppc, COUNTRY) %>%
-    mutate(gdppc = log(gdppc), COUNTRY = as.factor(COUNTRY)) %>%
-    mutate_at(vars(ppa:gdppc), std) -> wjs_processed
-brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNTRY),
-    data = wjs_processed, cores = 4, iter = 3000, prior = informative_prior,
-        sample_prior = TRUE) -> ppa_mod
-
-set.seed(12121)
-## iter needs to set larger to ensure convergence
-brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + I(eiu^3) + gdppc + (1|COUNTRY),
-    data = wjs_processed, cores = 4, iter = 4000, prior = informative_prior,
-    sample_prior = TRUE) -> ppa_qmod
-```
-
 By looking at the regression coefficient and the 95\% HDI, the standardized regression coefficient for Index of Democracy is 0.24 (95\% HDI: 0.13 to 0.34). The Index of Democracy is not only a substantial predictor as 0 is not covered by the 95% HDI but also the strongest predictor among all other predictors (Rank: 0.15, Experience: 0.08, gender: -0.06, university degree: -0.01). It supports @hamada:2021:DJA's h2a, but our model does that without the problem of the aforementioned ecological fallacy and with adjustment for other potential confounders.
 
 Regarding the possible "J shape" relationship suggested by @reich:2013:DJP, we compare the model fit ($R^{2}$) of the cubic model and the parsimonious model and the cubic model provides no improvement in model fit over the parsimonious model (both: 0.194) [^loo]. By looking at the conditional effects plot (Figure \@ref(fig:fig5)), it also suggests that the relationship is not "J shape". On average, a journalist in countries that scored a lower Index of Democracy has a lower perceived professional autonomy. 
@@ -479,7 +391,7 @@ x <- readRDS("qmod_condit.RDS")
 x$`eiu` + xlab("Index of Democracy (mean-centered)") + ylab("Perceived professional autonomy (mean-centered)") + theme_minimal() + scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2")
 ```
 
-[^wald]: Here we used the z-approximation of Wald test rather than the more typical t-distribution-based Wald test because the degree of freedom (df) is not reported. And t-distribution approximates z-distribution asymptotically when df gets larger.
+<!-- [^wald]: Here we used the z-approximation of Wald test rather than the more typical t-distribution-based Wald test because the degree of freedom (df) is not reported. And t-distribution approximates z-distribution asymptotically when df gets larger. -->
 
 [^jshape]: Actually, the replication by @hamada:2021:DJA has shown that the relationship is not in such J shape. But we were assumed to be in the time point before such replication.
 
