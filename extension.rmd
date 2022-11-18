@@ -1,5 +1,5 @@
 ---
-title             : "Online appendix to \"Bayesian (comparative) journalism studies\""
+title             : "Online appendix to \"Bayesian multilevel modeling and its application in comparative communication research\""
 shorttitle        : "BAYESIAN MULTILEVEL REGRESSION"
 
 # author: 
@@ -41,6 +41,7 @@ output:
 ```{r setup, include = FALSE}
 library("papaja")
 require(brms)
+require(parameters)
 import_brms <- readRDS("import_brms.RDS")
 ```
 
@@ -66,7 +67,7 @@ brm(z ~ offset(log(n)) + (1|k)+log(x),
 glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
 ```
 
-## Expression of disaggregated out-level model in MASS
+## Expression of disaggregated outlet-level model in MASS
 
 ```r
 require(MASS)
@@ -142,12 +143,28 @@ brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + I(eiu^3) + gdppc + (1|COUNTRY),
     sample_prior = TRUE) -> ppa_qmod
 ```
 
+# Multivariate regression of Example 1
 
-# Validation of the seed dictionaries
+Source code:
+
+```r
+brm(mvbind(C9, C10) ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNTRY),
+    family=cumulative("logit"), cores = 4, iter = 3000, sample_prior = TRUE,
+    data = wjs, control = list(adapt_delta = 0.99), prior = informative_prior)
+```
+
+## Results
+
+```{r, results = "asis", warning = FALSE, echo = FALSE}
+clmod <- readRDS("ppa_clmod.RDS")
+suppressWarnings(print(print_md(parameters(clmod, ci = 0.95))))
+```
+
+# Example 2: Validation of the seed dictionaries
 
 One might argue our seed dictionaries are not validated. We deem that the criterion validity of our dictionary should be built-in. Coverage of China, by definition, should mention words about China. We also maintain that it is difficult to conduct a human validation of the seed dictionaries because the useNews dataset [@puschmann:2020] doesn’t provide access to the full-length articles. Nonetheless, we attempted to conduct such validation by randomly selecting 10 matching and 10 non-matching items for each language. In total, 160 items were selected. A coder with no knowledge of the ground truth (matching or not) annotated the full-text articles by following the URLs in the meta data provided in the useNews dataset [@puschmann:2020]. For some languages, the coder used Google Translate to translate the full text article to English. In total, only 138 URLs were still accessible. Comparing the ground truth and the human coding, 62 and 70 are true-positive and true-negative cases. There are also 5 false-negative and 1 false-positive cases. There are several reasons not related to our seed dictionaries that could lead to the 6 misclassified cases. The false-positive case is Korean and that could be due to incorrect tokenization at the MIT Media Cloud’s end. The 5 false-negative cases are in Norwegian, Portuguese, and Romanian. The content on the website might have changed since MIT Media Cloud collected the data. For example, the ever-changing content in the sidebar might be counted as “main content” and recorded in the DTM. Despite all these caveats, our seed dictionaries have a precision and recall of 98.4% and 92.5% respectively. For the purpose of demonstrating regression analysis, this level of accuracy is more than sufficient.
 
-# Extensions to Example 1
+# Extensions to the useNews example
 
 ## Extension #1: Hypothesis testing
 
