@@ -42,7 +42,9 @@ output:
 library("papaja")
 require(brms)
 require(parameters)
+require(cowplot)
 import_brms <- readRDS("import_brms.RDS")
+import_brms_poisson <- readRDS("import_brms_poisson.RDS")
 ```
 
 ```{r analysis-preferences}
@@ -55,53 +57,11 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 All source will be available on the author(s)' Github upon acceptance. The following are key code chunks used in the paper.
 
-## Expression of outlet-level models in lme4 and brms
+## Example 1
 
-```r
-require(brms)
-require(lme4)
-# brms
-brm(z ~ offset(log(n)) + (1|k)+log(x),
-          family = negbinomial(), data = outlet_data)
-# lme4
-glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
-```
+### Estimation of prior
 
-## Expression of disaggregated outlet-level model in MASS
-
-```r
-require(MASS)
-glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
-```
-
-## Expression of article-level models in lme4 and brms
-
-```r
-brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
-glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
-```
-
-## Expression of disaggregated article-level model in MASS
-
-```r
-glm(y ~ log(x), family = binomial(), data = article_data)
-```
-
-## Setting up weakly informative prior in the brms model
-
-```r
-weaklyinformative_prior <- c(prior_string("normal(0, 1)",
-                                          class = "b"),
-                             prior_string("normal(0, 1)",
-                                          class = "Intercept"))
-# The sample_prior argument is optional. But useful for further analysis.
-import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import),
-          data = outlet_data, family = negbinomial(),
-          prior = weaklyinformative_prior, sample_prior = TRUE)
-import_brms
-```
-
-## WJS: Estimation of prior
+Determination of prior based on the level of significance.
 
 ```r
 beta_d_1 <- 0.15
@@ -109,7 +69,7 @@ sig_level <- 0.001
 beta_d_1 / abs(qnorm(sig_level / 2))
 ```
 
-## WJS: Full code
+### Full code
 
 The cubic relationship can be set using the `I()` function.
 
@@ -143,9 +103,81 @@ brm(ppa ~ EXPRNCE + RANK + GENDER + UNI_EDU + I(eiu^3) + gdppc + (1|COUNTRY),
     sample_prior = TRUE) -> ppa_qmod
 ```
 
-# Multivariate regression of Example 1
+## Example 2
 
-Source code:
+### Expression of outlet-level models in lme4 and brms
+
+As below
+
+```r
+require(brms)
+require(lme4)
+# brms
+brm(z ~ offset(log(n)) + (1|k)+log(x),
+          family = negbinomial(), data = outlet_data)
+# lme4
+glmer.nb(z ~ offset(log(n)) + (1|k) + log(x), data = outlet_data)
+```
+
+### Expression of disaggregated outlet-level model in MASS
+
+As below
+
+```r
+require(MASS)
+glm.nb(z ~ offset(log(n)) + log(x), data = outlet_data)
+```
+
+## Expression of article-level models in lme4 and brms
+
+As below
+
+```r
+brm(y~(1|k/j)+log(x), family = bernoulli(), data = article_data)
+glmmer(y~(1|k/j)+log(x), family = binomial(), data = article_data)
+```
+
+### Expression of disaggregated article-level model in MASS
+
+As below
+
+```r
+glm(y ~ log(x), family = binomial(), data = article_data)
+```
+
+### Setting up weakly informative prior in the brms model
+
+As below
+
+```r
+weaklyinformative_prior <- c(prior_string("normal(0, 1)",
+                                          class = "b"),
+                             prior_string("normal(0, 1)",
+                                          class = "Intercept"))
+# The sample_prior argument is optional. But useful for further analysis.
+import_brms <- brm(z~offset(log(n))+(1|k)+log(x_import),
+          data = outlet_data, family = negbinomial(),
+          prior = weaklyinformative_prior, sample_prior = TRUE)
+import_brms
+```
+
+# Finger-like shape of Example 1 and multivariate regression
+
+The finger-like shape is a manifestation of analyzing the two ordinal variables (two Likert items) as if they were in an interval scale. The PPC shows the original analytic scheme of both @reich:2013:DJP and @hamada:2021:DJA cannot capture the shape of the data. Also, the psychological distances between two neighboring options in a Likert scale (e.g. "complete freedom" and "a great deal of freedom") are not the same across all pairs and one can’t assume that Likert items can be summed or averaged [@buerkner:2019:ORM].
+
+If this were not a replication and one didn't need to accept the previous operationalization of perceived professional autonomy, a better way to answer this research question using the WJS data is to make two modifications. First, one should use the ordinal regression technique to model the responses from Likert items [@buerkner:2019:ORM]. Second, the two Likert items related to perceived professional autonomy can be modeled jointly using a multivariate regression model. 
+
+As an exploratory analysis, we fitted a Bayesian model with these two modifications (see Online Appendix). And indeed the posterior predictive check of the model suggests that the modified model is better at pinning down the data-generating process of the Likert items than the unmodified model: the new model correctly pins down both the range, peaks and shape of the original data (Figure \@ref(fig:clplot)). The bottom line is the same: democratic performance of a country is still a strong predictor of journalists’ perceived professional autonomy in the modified model, although the magnitude of influence is not as great as shown by the unmodified model displayed in table 1.
+
+```{r clplot, echo = FALSE, fig.cap = "Posterior predictive checks with 100 sets of simulated data based on the multivariate ordinal model"}
+require(cowplot)
+c9c10ppc <- readRDS("ppa_clmod_ppc.RDS")
+c9c10ppc[[1]] + ggtitle(label = "", subtitle = "How much freedom do you personally have in selecting news stories you work on?") -> c9gg
+c9c10ppc[[2]] + ggtitle(label = "", subtitle = "How much freedom do you personally have in deciding which aspects of a story should \n be emphasized?") -> c10gg
+plot_grid(c9gg, c10gg, ncol = 1)
+```
+
+As below
 
 ```r
 brm(mvbind(C9, C10) ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNTRY),
@@ -155,14 +187,14 @@ brm(mvbind(C9, C10) ~ EXPRNCE + RANK + GENDER + UNI_EDU + eiu + gdppc + (1|COUNT
 
 ## Results
 
-```{r, results = "asis", warning = FALSE, echo = FALSE}
+```{r ppa, results = "asis", warning = FALSE, echo = FALSE}
 clmod <- readRDS("ppa_clmod.RDS")
 suppressWarnings(print(print_md(parameters(clmod, ci = 0.95))))
 ```
 
 # Example 2: Validation of the seed dictionaries
 
-One might argue our seed dictionaries are not validated. We deem that the criterion validity of our dictionary should be built-in. Coverage of China, by definition, should mention words about China. We also maintain that it is difficult to conduct a human validation of the seed dictionaries because the useNews dataset [@puschmann:2020] doesn’t provide access to the full-length articles. Nonetheless, we attempted to conduct such validation by randomly selecting 10 matching and 10 non-matching items for each language. In total, 160 items were selected. A coder with no knowledge of the ground truth (matching or not) annotated the full-text articles by following the URLs in the meta data provided in the useNews dataset [@puschmann:2020]. For some languages, the coder used Google Translate to translate the full text article to English. In total, only 138 URLs were still accessible. Comparing the ground truth and the human coding, 62 and 70 are true-positive and true-negative cases. There are also 5 false-negative and 1 false-positive cases. There are several reasons not related to our seed dictionaries that could lead to the 6 misclassified cases. The false-positive case is Korean and that could be due to incorrect tokenization at the MIT Media Cloud’s end. The 5 false-negative cases are in Norwegian, Portuguese, and Romanian. The content on the website might have changed since MIT Media Cloud collected the data. For example, the ever-changing content in the sidebar might be counted as “main content” and recorded in the DTM. Despite all these caveats, our seed dictionaries have a precision and recall of 98.4% and 92.5% respectively. For the purpose of demonstrating regression analysis, this level of accuracy is more than sufficient.
+One might argue our seed dictionaries are not validated. We deem that the criterion validity of our dictionary should be built-in. Coverage of China, by definition, should mention words about China. We also maintain that it is difficult to conduct a human validation of the seed dictionaries because the useNews dataset [@puschmann:2020] doesn’t provide access to the full-length articles. Nonetheless, we attempted to conduct such validation by randomly selecting 10 matching and 10 non-matching items for each language. In total, 160 items were selected. A coder with no knowledge of the ground truth (matching or not) annotated the full-text articles by following the URLs in the meta data provided in the useNews dataset [@puschmann:2020]. For some languages, the coder used Google Translate to translate the full text article to English. In total, only 138 URLs were still accessible. Comparing the ground truth and the human coding, 62 and 70 are true-positive and true-negative cases. There are also 5 false-negative and 1 false-positive cases. There are several reasons not related to our seed dictionaries that could lead to the 6 misclassified cases. The false-positive case is Korean and that could be due to incorrect tokenization at the Media Cloud’s end. The 5 false-negative cases are in Norwegian, Portuguese, and Romanian. The content on the website might have changed since Media Cloud collected the data. For example, the ever-changing content in the sidebar might be counted as “main content” and recorded in the DTM. Despite all these caveats, our seed dictionaries have a precision and recall of 98.4% and 92.5% respectively. For the purpose of demonstrating regression analysis, this level of accuracy is more than sufficient.
 
 # Extensions to the useNews example
 
@@ -281,6 +313,29 @@ loo(ppa_qmod, ppa_mod)
 ```
 
 The difference in $elpd_{loo}$ between the cubic model and the parsimonious model is only -0.3 with a larger standard error of 0.5. One would say there is a difference in out of sample model fit, when $elpa_{loo}$ is many times larger than its standard error.
+
+# Poisson regression
+
+The useNews example could also be modeled by Poisson regression.
+
+```r
+weaklyinformative_prior <- c(prior_string("normal(0, 1)",
+                                          class = "b"),
+                             prior_string("normal(0, 1)",
+                                          class = "Intercept"))
+import_brms_poisson <- brm(z~offset(log(n))+(1|k)+log(x_import),
+                           data = outlet_data, family = poisson(),
+                           prior = weaklyinformative_prior,
+                           sample_prior = TRUE)
+```
+
+However, the PPCs reveal a property of the Poisson model. Compared with the PPCs of the negative binomial model (the same as Figure 4 in the main text), the Poisson model tends to produce stimulated data with an unusual high level of certainty (both models were based on 61 data points). It is an indication of shrinkage (reduction of standard error, i.e. more false positives) due to overdispersion [the variance of the data is higher than the expectation of the model, see @gardner:1995:R]. Poisson model assumes the data to have only one parameter ($\lambda$), which represents both mean and variance. The current data clearly violates this assumption (the variance is far larger than the mean).
+
+```{r fig3x, warning = FALSE, echo = FALSE, fig.cap = "Posterior predictive checks of the Poisson model (Left) and the negative binomial model (Right) with 100 sets of simulated data"}
+ppc_poisson <- pp_check(import_brms_poisson, ndraws = 100)+ theme_minimal()+ xlim(0, 5000) + ylim(0, 7e-4)
+ppc_nb <- pp_check(import_brms, ndraws = 100)+ theme_minimal() + xlim(0, 5000) + ylim(0, 7e-4)
+plot_grid(ppc_poisson, ppc_nb, ncol = 2)
+```
 
 # References
 
