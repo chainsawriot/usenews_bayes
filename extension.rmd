@@ -1,5 +1,5 @@
 ---
-title             : "Online appendix to \"Bayesian multilevel modeling and its application in comparative communication research\""
+title             : "Online appendix to \"Bayesian multilevel modeling and its application in comparative journalism studies\""
 shorttitle        : "BAYESIAN MULTILEVEL REGRESSION"
 
 # author: 
@@ -171,6 +171,7 @@ As an exploratory analysis, we fitted a Bayesian model with these two modificati
 
 ```{r clplot, echo = FALSE, fig.cap = "Posterior predictive checks with 100 sets of simulated data based on the multivariate ordinal model"}
 require(cowplot)
+require(ggplot2)
 c9c10ppc <- readRDS("ppa_clmod_ppc.RDS")
 c9c10ppc[[1]] + ggtitle(label = "", subtitle = "How much freedom do you personally have in selecting news stories you work on?") -> c9gg
 c9c10ppc[[2]] + ggtitle(label = "", subtitle = "How much freedom do you personally have in deciding which aspects of a story should \n be emphasized?") -> c10gg
