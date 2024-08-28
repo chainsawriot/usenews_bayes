@@ -29,6 +29,8 @@ There are two important R Markdown files
 1. `manuscript.rmd` - as the name suggested
 2. `extension.rmd` - the online appendix
 
+Important Note: In `02_`, the file `media1k.csv` was generated. That file was then manually coded to add two more columns (`country` and `public`) to it.
+
 # External requirements
 
 You still need the WJS data from [this website](https://worldsofjournalism.org/data-d79/data-and-key-tables-2012-2016/). The filename is `WJS2 open V4-02 030517.sav`. Please put it in the `data` directory (see `wjs.R`).

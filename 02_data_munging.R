@@ -21,8 +21,10 @@ overview %>% filter(n > 1000) %>% pull(lang) %>% unique
 
 ##head(docvars(wm[[1]]))
 
-##overview %>% filter(n > 1000) %>% rio::export("media1k.csv")
+## For manual coding
+## overview %>% filter(n > 1000) %>% rio::export("media1k.csv")
 
+## This file was manually coded to add two columns to it "country" and "public"
 media1k <- rio::import("media1k.csv")
 
 china_dict <- dictionary(file = "chinese.yml")
