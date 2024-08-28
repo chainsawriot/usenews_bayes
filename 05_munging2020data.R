@@ -19,11 +19,8 @@ outlet_data <- readRDS("small_df.RDS")
 
 ### To match the notion in the paper
 
-colnames(outlet_data) <- c("j", "media", "lang", "n", "k", "z", "x_phy", "x_export", "x_import", "x_cult")
-
-media1k <- rio::import("media1k.csv") %>% tibble::as_tibble()
-
-outlet_data$public <- ifelse(media1k$public == 1, "Yes", "No")
+outlet_data %>% dplyr::rename(j = i, k = country, z = res, x_phy = phy_dist, x_export = export, x_import = import, x_cult = cult_dist) -> outlet_data
+outlet_data$public <- ifelse(outlet_data$public == 1, "Yes", "No")
 
 require(fuzzyjoin)
 
@@ -44,8 +41,4 @@ cal_china <- function(media_id, media_lang, wm, china_dict) {
 res <- map2_int(overview1920$i, overview1920$lang.x, cal_china, wm = wm, china_dict = china_dict)
 overview1920$z_2020 <- res
 
-names(overview1920) <- c("i", "media", "lang", "n_2020", "j", "media.y", "lang.y", "n_2019", "k", "z_2019", "x_phy", "x_export", "x_import", "x_cult", "public", "z_2020")
-
-overview1920 %>% select(-media.y, -lang.y) -> overview1920
-
-saveRDS(overview1920, "overview1920.RDS")
+overview1920 %>% rename(media = media.x, lang = lang.x, n_2020 = n.x, n_2019 = n.y, z_2019 = z) %>% select(-media.y, -lang.y) %>% relocate(public, .after = x_cult) %>% saveRDS("overview1920.RDS")

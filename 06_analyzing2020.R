@@ -10,7 +10,7 @@ import2019
 ## gamma00 -6.69, se 0.66
 ## sd 0.08 se 0.07
 
-parameters::parameters(import2019, dispersion = TRUE, centrality = "mean")
+##parameters::parameters(import2019, dispersion = TRUE, centrality = "mean")
 
 informative_prior <- c(prior_string("normal(0.25, 0.05)", class = "b",, coef = "logx_import"), prior_string("normal(-6.69, 0.66)", class = "Intercept"))
 
