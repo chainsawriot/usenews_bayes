@@ -10,13 +10,13 @@ set.seed(2021)
 
 outlet_data <- readRDS("small_df.RDS")
 
-### To match the notion in the paper
+### To match the notation in the paper
 
-colnames(outlet_data) <- c("j", "media", "lang", "n", "k", "z", "x_phy", "x_export", "x_import", "x_cult")
+outlet_data %>% dplyr::rename(j = i, k = country, z = res, x_phy = phy_dist, x_export = export, x_import = import, x_cult = cult_dist) -> outlet_data
 
-media1k <- rio::import("media1k.csv") %>% tibble::as_tibble()
+## media1k <- rio::import("media1k.csv") %>% tibble::as_tibble()
 
-outlet_data$public <- ifelse(media1k$public == 1, "Yes", "No")
+outlet_data$public <- ifelse(outlet_data$public == 1, "Yes", "No")
 
 
 import_brms <- readRDS("import_brms.RDS")

@@ -11,11 +11,9 @@ outlet_data <- readRDS("small_df.RDS")
 
 ### To match the notion in the paper
 
-colnames(outlet_data) <- c("j", "media", "lang", "n", "k", "z", "x_phy", "x_export", "x_import", "x_cult")
+outlet_data %>% dplyr::rename(j = i, k = country, z = res, x_phy = phy_dist, x_export = export, x_import = import, x_cult = cult_dist) -> outlet_data
 
-media1k <- rio::import("media1k.csv") %>% tibble::as_tibble()
-
-outlet_data$public <- ifelse(media1k$public == 1, "Yes", "No")
+outlet_data$public <- ifelse(outlet_data$public == 1, "Yes", "No")
 
 ## media_summary %>% mutate(prob = res / n, logexport = log(export)) %>% select(prob, logexport, country) %>% ggplot(aes(x = logexport, y = prob, color = country)) + geom_point()
 
@@ -49,7 +47,7 @@ outlet_data$noise <- runif(nrow(outlet_data))
 ## outlet_data$normalized_noise <- scale(outlet_data$noise)[,1]
 
 noise_brms <- brm(z~offset(log(n))+(1|k)+noise, data = outlet_data, family = negbinomial(), control = list(adapt_delta = 0.99), prior = weaklyinformative_prior, sample_prior = TRUE)
-rope(noise_brms_norm) ## 59%
+bayestestR::rope(noise_brms) ## 59%
 
 ## svg("fig1.svg")
 ## plot(import_brms)
